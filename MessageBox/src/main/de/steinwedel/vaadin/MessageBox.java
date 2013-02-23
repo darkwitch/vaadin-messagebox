@@ -152,8 +152,30 @@ public class MessageBox extends Window {
 		private String width;
 		
 		/**
-		 * Equals to {@link ButtonConfig(ButtonType, String, String)}, but the button 
-		 * icon resource is set explicitly.
+		 * Creates an instance of this class for defining the appearance and 
+		 * caption of a button displayed inside the message box.
+		 * 
+		 * @param buttonType 			which button type (see {@link ButtonType})
+		 * @param caption				caption of the button
+		 */
+		public ButtonConfig(ButtonType buttonType, String caption) {
+			this(buttonType, caption, BUTTON_DEFAULT_WIDTH);
+		}
+		/**
+		 * Equals to {@link #MessageBox.ButtonConfig(de.steinwedel.vaadin.MessageBox.ButtonType, java.lang.String) ButtonConfig(ButtonType, String)}, 
+		 * but the button width is set explicitly instead of using {@code BUTTON_DEFAULT_WIDTH}.
+		 * 
+		 * @param width button width
+		 */
+		public ButtonConfig(ButtonType buttonType,
+						  String caption, 
+						  String width) {
+			this(buttonType, caption, width, null);
+		}
+		
+		/**
+		 * Equals to {@link #MessageBox.ButtonConfig(de.steinwedel.vaadin.MessageBox.ButtonType, java.lang.String, java.lang.String) ButtonConfig(ButtonType, String, String)}, 
+		 * but the button  icon resource is set explicitly.
 		 * 
 		 * @param optionalResource		an none default resource, that should be displayed as icon
 		 */
@@ -170,31 +192,7 @@ public class MessageBox extends Window {
 			this.caption = caption;
 			this.width = width;
 		}
-	
-		/**
-		 * Equals to {@link ButtonConfig(ButtonType, String)}, but the button 
-		 * width is set explicitly instead of using {@code BUTTON_DEFAULT_WIDTH}.
-		 * 
-		 * @param width button width
-		 */
-		public ButtonConfig(ButtonType buttonType,
-						  String caption, 
-						  String width) {
-			this(buttonType, caption, width, null);
-		}
 		
-		/**
-		 * Creates an instance of this class for defining the appearance and 
-		 * caption of a button displayed inside the message box.
-		 * 
-		 * @param buttonType 			which button type (see {@link ButtonType})
-		 * @param caption				caption of the button
-		 */
-		public ButtonConfig(ButtonType buttonType,
-				  		  String caption) {
-			this(buttonType, caption, BUTTON_DEFAULT_WIDTH);
-		}
-
 		/**
 		 * Returns the optional resource, if set.
 		 * 
