@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Implementation-Title: MessageBox
+Implementation-Version: 1.1.2
+Vaadin-Package-Version: 1
+Class-Path: 
