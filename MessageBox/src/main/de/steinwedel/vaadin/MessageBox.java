@@ -2,7 +2,8 @@ package de.steinwedel.vaadin;
 
 import java.io.Serializable;
 
-import com.vaadin.terminal.Resource;
+import com.vaadin.server.Resource;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -12,6 +13,7 @@ import com.vaadin.ui.Embedded;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.steinwedel.vaadin.ResourceFactory.IconResource;
@@ -91,7 +93,6 @@ public class MessageBox extends Window {
 	
 	public static VisibilityInterceptor VISIBILITY_INTERCEPTOR;
 	
-	private Window parentWindow;
 	private EventListener listener;
 	
 	/**
@@ -240,21 +241,19 @@ public class MessageBox extends Window {
 		
 		/**
 		 * Intercepts the displaying of the dialog.
-		 * 
-		 * @param parentWindow		The parent Window for the <code>MessageBox</code> 
+		 *  
 		 * @param displayedDialog	The <code>MessageBox</code> instance to be displayed
 		 * @return					Returns <code>false</code>, if the method implementation opens the <code>MessageBox</code> window itself. Otherwise returns <code>true</code>.
 		 */
-		public boolean show(Window parentWindow, MessageBox displayedDialog);
+		public boolean show(MessageBox displayedDialog);
 		
 		/**
 		 * Intercepts the closing of the dialog.
-		 * 
-		 * @param parentWindow		The parent Window for the <code>MessageBox</code> 
+		 *  
 		 * @param displayedDialog	The <code>MessageBox</code> instance to be displayed
 		 * @return					Returns <code>false</code>, if the method implementation closes the <code>MessageBox</code> window itself. Otherwise returns <code>true</code>.
 		 */
-		public boolean close(Window parentWindow, MessageBox displayedDialog);
+		public boolean close(MessageBox displayedDialog);
 		
 	}
 	
@@ -310,19 +309,16 @@ public class MessageBox extends Window {
 	/**
 	 * Creates an MessageBox instance.
 	 * 
-	 * @param parentWindow the parent window
 	 * @param dialogCaption the caption of the dialog
 	 * @param dialogIcon the displayed icon
 	 * @param message the displayed message
 	 * @param buttonConfigs the displayed buttons (see {@link ButtonConfig})
 	 */
-	public MessageBox(Window parentWindow, 
-			String dialogCaption, 
+	public MessageBox(String dialogCaption, 
 			Icon dialogIcon, 
 			String message, 
 			ButtonConfig... buttonConfigs) {
-		this(parentWindow, 
-			DIALOG_DEFAULT_WIDTH, 
+		this(DIALOG_DEFAULT_WIDTH, 
 			DIALOG_DEFAULT_HEIGHT,
 			dialogCaption, 
 			dialogIcon, 
@@ -337,14 +333,12 @@ public class MessageBox extends Window {
 	 * 
 	 * @param buttonsAlignment alignment of the button.
 	 */
-	public MessageBox(Window parentWindow, 
-			String dialogCaption, 
+	public MessageBox(String dialogCaption, 
 			Icon dialogIcon, 
 			String message,
 			Alignment buttonsAlignment, 
 			ButtonConfig... buttonConfigs) {
-		this(parentWindow, 
-			DIALOG_DEFAULT_WIDTH, 
+		this(DIALOG_DEFAULT_WIDTH, 
 			DIALOG_DEFAULT_HEIGHT,
 			dialogCaption, 
 			dialogIcon, 
@@ -360,33 +354,30 @@ public class MessageBox extends Window {
 	 * @param dialogWidth  width of the dialog (e.g. absolute "100px" or relative "50%")
 	 * @param dialogHeight height of the dialog (e.g. absolute "100px" or relative "50%")
 	 */
-	public MessageBox(Window parentWindow, 
-			String dialogWidth, 
+	public MessageBox(String dialogWidth, 
 			String dialogHeight,
 			String dialogCaption, 
 			Icon dialogIcon, 
 			String message,
 			Alignment buttonsAlignment, 
 			ButtonConfig... buttonConfigs) {
-		this(parentWindow, 
-			dialogWidth, 
+		this(dialogWidth, 
 			dialogHeight,
 			dialogCaption, 
 			dialogIcon, 
-			new Label(message, Label.CONTENT_XHTML),
+			new Label(message, ContentMode.HTML),
 			buttonsAlignment, 
 			buttonConfigs);
 	}
 	
 	/**
-	 * Similar to {@link #MessageBox(Window, String, Icon, String, Alignment, ButtonConfig...)},
+	 * Similar to {@link #MessageBox(UI, String, Icon, String, Alignment, ButtonConfig...)},
 	 * but the message component is defined explicitly. The component can be even a composite
 	 * of a layout manager and manager further Vaadin components.
 	 * 
 	 * @param messageComponent a Vaadin component
 	 */
-	public MessageBox(Window parentWindow, 
-						String dialogWidth, 
+	public MessageBox(String dialogWidth, 
 						String dialogHeight,
 						String dialogCaption, 
 						Icon dialogIcon, 
@@ -394,7 +385,6 @@ public class MessageBox extends Window {
 						Alignment buttonsAlignment, 
 						ButtonConfig... buttonConfigs) {
 		super();
-		this.parentWindow = parentWindow;
 		setResizable(false);
 		setClosable(false);
 		setWidth(dialogWidth);
@@ -421,16 +411,16 @@ public class MessageBox extends Window {
 			Embedded icon = null;
 			switch (dialogIcon) {
 			case QUESTION:
-				icon = new Embedded(null, RESOURCE_FACTORY.loadResource(IconResource.QUESTION, parentWindow.getApplication()));
+				icon = new Embedded(null, RESOURCE_FACTORY.loadResource(IconResource.QUESTION));
 				break;
 			case INFO:
-				icon = new Embedded(null, RESOURCE_FACTORY.loadResource(IconResource.INFO, parentWindow.getApplication()));
+				icon = new Embedded(null, RESOURCE_FACTORY.loadResource(IconResource.INFO));
 				break;
 			case WARN:
-				icon = new Embedded(null, RESOURCE_FACTORY.loadResource(IconResource.WARN, parentWindow.getApplication()));
+				icon = new Embedded(null, RESOURCE_FACTORY.loadResource(IconResource.WARN));
 				break;
 			case ERROR:
-				icon = new Embedded(null, RESOURCE_FACTORY.loadResource(IconResource.ERROR, parentWindow.getApplication()));
+				icon = new Embedded(null, RESOURCE_FACTORY.loadResource(IconResource.ERROR));
 				break;
 			}
 			mainLayout.addComponent(icon, 0, 0);
@@ -454,34 +444,34 @@ public class MessageBox extends Window {
 				Resource icon = null;
 				switch (buttonConfig.getButtonType()) {
 				case ABORT:
-					icon = RESOURCE_FACTORY.loadResource(IconResource.ABORT, parentWindow.getApplication());
+					icon = RESOURCE_FACTORY.loadResource(IconResource.ABORT);
 					break;
 				case CANCEL:
-					icon = RESOURCE_FACTORY.loadResource(IconResource.CANCEL, parentWindow.getApplication());
+					icon = RESOURCE_FACTORY.loadResource(IconResource.CANCEL);
 					break;
 				case CLOSE:
-					icon = RESOURCE_FACTORY.loadResource(IconResource.CLOSE, parentWindow.getApplication());
+					icon = RESOURCE_FACTORY.loadResource(IconResource.CLOSE);
 					break;
 				case HELP:
-					icon = RESOURCE_FACTORY.loadResource(IconResource.HELP, parentWindow.getApplication());
+					icon = RESOURCE_FACTORY.loadResource(IconResource.HELP);
 					break;
 				case OK:
-					icon = RESOURCE_FACTORY.loadResource(IconResource.OK, parentWindow.getApplication());
+					icon = RESOURCE_FACTORY.loadResource(IconResource.OK);
 					break;
 				case YES:
-					icon = RESOURCE_FACTORY.loadResource(IconResource.YES, parentWindow.getApplication());
+					icon = RESOURCE_FACTORY.loadResource(IconResource.YES);
 					break;
 				case NO:
-					icon = RESOURCE_FACTORY.loadResource(IconResource.NO, parentWindow.getApplication());
+					icon = RESOURCE_FACTORY.loadResource(IconResource.NO);
 					break;
 				case SAVE:
-					icon = RESOURCE_FACTORY.loadResource(IconResource.SAVE, parentWindow.getApplication());
+					icon = RESOURCE_FACTORY.loadResource(IconResource.SAVE);
 					break;
 				case RETRY:
-					icon = RESOURCE_FACTORY.loadResource(IconResource.RETRY, parentWindow.getApplication());
+					icon = RESOURCE_FACTORY.loadResource(IconResource.RETRY);
 					break;
 				case IGNORE:
-					icon = RESOURCE_FACTORY.loadResource(IconResource.IGNORE, parentWindow.getApplication());
+					icon = RESOURCE_FACTORY.loadResource(IconResource.IGNORE);
 					break;
 				}
 				button.setIcon(icon);
@@ -526,8 +516,8 @@ public class MessageBox extends Window {
 	public void show(boolean modal, EventListener listener) {
 		this.listener = listener;
 		setModal(modal);
-		if (VISIBILITY_INTERCEPTOR == null || (VISIBILITY_INTERCEPTOR != null && VISIBILITY_INTERCEPTOR.show(parentWindow, this))) {
-			parentWindow.addWindow(this);
+		if (VISIBILITY_INTERCEPTOR == null || (VISIBILITY_INTERCEPTOR != null && VISIBILITY_INTERCEPTOR.show(this))) {
+			UI.getCurrent().addWindow(this);
 		}
 	}
 
@@ -536,8 +526,8 @@ public class MessageBox extends Window {
 	 * The buttons inside the dialog close automatically the message box. 
 	 */
 	public void close() {
-		if (VISIBILITY_INTERCEPTOR == null || (VISIBILITY_INTERCEPTOR != null && VISIBILITY_INTERCEPTOR.close(parentWindow, this))) {
-			parentWindow.removeWindow(this);
+		if (VISIBILITY_INTERCEPTOR == null || (VISIBILITY_INTERCEPTOR != null && VISIBILITY_INTERCEPTOR.close(this))) {
+			UI.getCurrent().removeWindow(this);
 		}
 	}
 	

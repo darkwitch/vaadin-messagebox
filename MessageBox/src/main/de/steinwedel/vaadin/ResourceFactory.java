@@ -2,9 +2,8 @@ package de.steinwedel.vaadin;
 
 import java.io.Serializable;
 
-import com.vaadin.Application;
-import com.vaadin.terminal.ClassResource;
-import com.vaadin.terminal.Resource;
+import com.vaadin.server.ClassResource;
+import com.vaadin.server.Resource;
 
 /**
  * Manages the loading of icon resources. You can override the method <code>loadResource</code> to use customized icons.
@@ -46,39 +45,38 @@ public class ResourceFactory implements Serializable {
 	/**
 	 * Loads the specified icon for the application.
 	 * @param icon				The requested icon
-	 * @param application		The application, where the icon is used
 	 * @return					The loaded icon
 	 */
-	public Resource loadResource(IconResource icon, Application application) {
+	public Resource loadResource(IconResource icon) {
 		switch (icon) {
 		case QUESTION:
-			return new ClassResource(ResourceFactory.class, "images/question.png", application);
+			return new ClassResource(ResourceFactory.class, "images/question.png");
 		case INFO:
-			return new ClassResource(ResourceFactory.class, "images/info.png", application);
+			return new ClassResource(ResourceFactory.class, "images/info.png");
 		case WARN:
-			return new ClassResource(ResourceFactory.class, "images/warn.png", application);
+			return new ClassResource(ResourceFactory.class, "images/warn.png");
 		case ERROR:
-			return new ClassResource(ResourceFactory.class, "images/error.png", application);
+			return new ClassResource(ResourceFactory.class, "images/error.png");
 		case OK:
-			return new ClassResource(ResourceFactory.class, "images/famfamfam/tick.png", application);
+			return new ClassResource(ResourceFactory.class, "images/famfamfam/tick.png");
 		case ABORT:
-			return new ClassResource(ResourceFactory.class, "images/famfamfam/cross.png", application);
+			return new ClassResource(ResourceFactory.class, "images/famfamfam/cross.png");
 		case CANCEL:
-			return new ClassResource(ResourceFactory.class, "images/famfamfam/cross.png", application);
+			return new ClassResource(ResourceFactory.class, "images/famfamfam/cross.png");
 		case YES:
-			return new ClassResource(ResourceFactory.class, "images/famfamfam/tick.png", application);
+			return new ClassResource(ResourceFactory.class, "images/famfamfam/tick.png");
 		case NO:
-			return new ClassResource(ResourceFactory.class, "images/famfamfam/cross.png", application);
+			return new ClassResource(ResourceFactory.class, "images/famfamfam/cross.png");
 		case CLOSE:
-			return new ClassResource(ResourceFactory.class, "images/famfamfam/door.png", application);
+			return new ClassResource(ResourceFactory.class, "images/famfamfam/door.png");
 		case SAVE:
-			return new ClassResource(ResourceFactory.class, "images/famfamfam/disk.png", application);
+			return new ClassResource(ResourceFactory.class, "images/famfamfam/disk.png");
 		case RETRY:
-			return new ClassResource(ResourceFactory.class, "images/famfamfam/arrow_refresh.png", application);
+			return new ClassResource(ResourceFactory.class, "images/famfamfam/arrow_refresh.png");
 		case IGNORE:
-			return new ClassResource(ResourceFactory.class, "images/famfamfam/lightning_go.png", application);
+			return new ClassResource(ResourceFactory.class, "images/famfamfam/lightning_go.png");
 		case HELP:
-			return new ClassResource(ResourceFactory.class, "images/famfamfam/lightbulb.png", application);
+			return new ClassResource(ResourceFactory.class, "images/famfamfam/lightbulb.png");
 		default:
 			return null;
 		}
