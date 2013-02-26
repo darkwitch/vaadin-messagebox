@@ -1,23 +1,17 @@
 package de.steinwedel;
 
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
+import de.steinwedel.messagebox.ButtonId;
+import de.steinwedel.messagebox.Icon;
+import de.steinwedel.messagebox.MessageBox;
+import de.steinwedel.messagebox.MessageBoxListener;
 
 /**
  * Demo Application for messagesboxes.
@@ -44,12 +38,9 @@ public class Demo extends UI {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				 MessageBox mb = new MessageBox("My message ...", 
-                         MessageBox.Icon.INFO, 
-                         "Hello World!",  
-                         new MessageBox.ButtonConfig(ButtonType.OK, "Ok"));
-				 mb.show();
+				 MessageBox.showPlain(Icon.INFO, "My message ...", "Hello World!", ButtonId.OK);
 			}
+			
 		});
         
         // Creates a question dialog
@@ -61,13 +52,9 @@ public class Demo extends UI {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				MessageBox mb = new MessageBox("Are you sure?", 
-                        MessageBox.Icon.QUESTION, 
-                        "Do you really want to continue?",  
-                        new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                        new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-				        mb.show();
+				MessageBox.showPlain(Icon.QUESTION, "Are you sure?", "Do you really want to continue?", ButtonId.YES, ButtonId.NO);
 			}
+			
 		});
         
         // Creates a warn dialog
@@ -79,16 +66,12 @@ public class Demo extends UI {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				 MessageBox mb = new MessageBox("Beware", 
-                         MessageBox.Icon.WARN, 
-                         "Some important warning!", 
-                         new MessageBox.ButtonConfig(ButtonType.YES, "Yes"),
-                         new MessageBox.ButtonConfig(ButtonType.CANCEL, "Cancel"));
-				 mb.show();
+				MessageBox.showPlain(Icon.WARN, "Beware", "Some important warning!", ButtonId.CLOSE);
 			}
+			
 		});
         
-       // Creates a error dialog
+        // Creates a error dialog
         Button error = new Button("Error Dialog");
         layout.addComponent(error);
         error.addClickListener(new ClickListener() {
@@ -97,17 +80,11 @@ public class Demo extends UI {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				 MessageBox mb = new MessageBox("D'oh", 
-                         MessageBox.Icon.ERROR, 
-                         "The batch job has failed! Do you want to continue?", 
-                         new MessageBox.ButtonConfig(ButtonType.RETRY, "Retry"),
-                         new MessageBox.ButtonConfig(ButtonType.IGNORE, "Ignore"),
-                         new MessageBox.ButtonConfig(ButtonType.ABORT, "Abort"));
-				 mb.show();
+				MessageBox.showPlain(Icon.ERROR, "D'oh", "The batch job has failed! Do you want to continue?", ButtonId.RETRY, ButtonId.IGNORE, ButtonId.ABORT);
 			}
 		});
         
-       // Creates a dialog without an icon
+        // Creates a dialog without an icon
         Button noIcon = new Button("No Icon Dialog");
         layout.addComponent(noIcon);
         noIcon.addClickListener(new ClickListener() {
@@ -116,11 +93,7 @@ public class Demo extends UI {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				 MessageBox mb = new MessageBox("A messagebox", 
-                         MessageBox.Icon.NONE, 
-                         "... without an icon.", 
-                         new MessageBox.ButtonConfig(ButtonType.OK, "Ok"));
-				 mb.show();
+				MessageBox.showPlain(Icon.NONE, "A messagebox", "... without an icon.", ButtonId.OK);
 			}
 		});
         
@@ -133,25 +106,23 @@ public class Demo extends UI {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				MessageBox mb = new MessageBox("Are you sure?", 
-                        MessageBox.Icon.QUESTION, 
-                        "Do you really want to continue?",  
-                        new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                        new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-				        mb.show(new EventListener() {
-				                                
-				                private static final long serialVersionUID = 1L;
-				
-				                @Override
-				                public void buttonClicked(ButtonType buttonType) {
-				                        System.out.println("This button was pressed: " + buttonType);
-				                }
-				        });
+				MessageBox.showPlain(Icon.QUESTION, 
+						"Are you sure?", 
+						"Do you really want to continue?", 
+						new MessageBoxListener() {
+					
+							@Override
+							public void buttonClicked(ButtonId buttonId) {
+								System.out.println("Following button was pressed: " + buttonId);
+							}
+						}, 
+						ButtonId.YES, 
+						ButtonId.NO);				
 			}
 		});
         
         // creates a dialog with custom width
-        Button customWidth = new Button("custom width");
+        Button customWidth = new Button("Custom size");
         layout.addComponent(customWidth);
         customWidth.addClickListener(new ClickListener() {
 
@@ -159,17 +130,12 @@ public class Demo extends UI {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				 MessageBox mb = new MessageBox("My message ...", 
-                         MessageBox.Icon.INFO, 
-                         "Hello World!",  
-                         new MessageBox.ButtonConfig(ButtonType.OK, "Ok"));
-				 mb.setWidth("500px");
-				 mb.show();
+				MessageBox.showPlain(Icon.NONE, "Forced width & height", "Size is 500x300 pixel.", ButtonId.OK).setWidth("500px").setHeight("300px");
 			}
 		});
         
         // Creates an info dialog
-        Button longText = new Button("Long Text");
+        Button longText = new Button("Long Message");
         layout.addComponent(longText);
         longText.addClickListener(new ClickListener() {
 
@@ -177,115 +143,110 @@ public class Demo extends UI {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				 MessageBox mb = new MessageBox("My message ...", 
-                         MessageBox.Icon.INFO, 
-                         "Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla - END",  
-                         new MessageBox.ButtonConfig(ButtonType.OK, "Ok"));
-				 mb.setHeight("200px");
-				 mb.show();
+				MessageBox.showPlain(Icon.NONE, "A long message ...", "Long plain text has to be wrapped manually with an '\\n':\n1. line\n2. line\n3. line\n4. line\n5. line\n6. line", ButtonId.OK);
 			}
 		});
         
-        
-        // Creates an info dialog
-        Button test = new Button("test");
-        layout.addComponent(test);
-        test.addClickListener(new ClickListener() {
+        // Creates a dialog with buttons aligned center
+        Button buttonCentered = new Button("Buttons centered");
+        layout.addComponent(buttonCentered);
+        buttonCentered.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				 Window window = new Window("Test");
-				 window.setModal(true);
-				 VerticalLayout mainLayout;
-					HorizontalLayout buttonLayout;
-					Button button_3;
-					Button button_2;
-					Button button_1;
-					HorizontalLayout contentLayout;
-					Label msgLabel;
-					Label iconLabel;
-					
-					// common part: create layout
-					mainLayout = new VerticalLayout();
-					mainLayout.setImmediate(false);
-					mainLayout.setWidth("-1px");
-					mainLayout.setHeight("-1px");
-					mainLayout.setMargin(true);
-					mainLayout.setSpacing(true);
-					
-					// top-level component properties
-					setWidth("-1px");
-					setHeight("-1px");
-					
-					// horizontalLayout_1
-					contentLayout = new HorizontalLayout();
-					contentLayout.setImmediate(false);
-					contentLayout.setWidth("100.0%");
-					contentLayout.setHeight("100.0%");
-					contentLayout.setMargin(false);
-					contentLayout.setSpacing(true);
-					
-					// iconLabel
-					iconLabel = new Label();
-					iconLabel.setImmediate(false);
-					iconLabel.setWidth("-1px");
-					iconLabel.setHeight("-1px");
-					iconLabel.setValue("Label");
-					contentLayout.addComponent(iconLabel);
-					
-					// msgLabel
-					msgLabel = new Label();
-					msgLabel.setImmediate(false);
-					msgLabel.setWidth("100.0%");
-					msgLabel.setHeight("100.0%");
-					msgLabel.setContentMode(ContentMode.PREFORMATTED);
-					msgLabel.setValue("Label Label Label Label Label\n Label Label Label Label Label \nLabel Label Label Label Label \nLabel Label Label Label \nLabel Label Label Label \nLabel Label Label Label Label \nLabel Label Label Label Label Label Label <br>--New Line Label Label  -- ENDE");
-					contentLayout.addComponent(msgLabel);
-					contentLayout.setExpandRatio(msgLabel, 1.0f);
-					mainLayout.addComponent(contentLayout);
-					mainLayout.setExpandRatio(contentLayout, 1.0f);
-					
-					// horizontalLayout_2
-					buttonLayout = new HorizontalLayout();
-					buttonLayout.setImmediate(false);
-					buttonLayout.setWidth("100%");
-					buttonLayout.setHeight("-1px");
-					buttonLayout.setMargin(false);
-					buttonLayout.setSpacing(true);
-					
-					// button_1
-					button_1 = new Button();
-					button_1.setCaption("Button");
-					button_1.setImmediate(true);
-					button_1.setWidth("-1px");
-					button_1.setHeight("-1px");
-					buttonLayout.addComponent(button_1);
-					
-					// button_2
-					button_2 = new Button();
-					button_2.setCaption("Button");
-					button_2.setImmediate(true);
-					button_2.setWidth("-1px");
-					button_2.setHeight("-1px");
-					buttonLayout.addComponent(button_2);
-					
-					// button_3
-					button_3 = new Button();
-					button_3.setCaption("Button");
-					button_3.setImmediate(true);
-					button_3.setWidth("-1px");
-					button_3.setHeight("-1px");
-					buttonLayout.addComponent(button_3);
-					
-					mainLayout.addComponent(buttonLayout);
-					
-					window.setContent(mainLayout);
-				 
-				 UI.getCurrent().addWindow(window);
+				MessageBox.showPlain(Icon.INFO, "Centered", "Now, the Buttons are aligned to the middle.", ButtonId.OK, ButtonId.CANCEL).setButtonAlignment(Alignment.MIDDLE_CENTER);
 			}
 		});
+        
+        // Creates a dialog with buttons aligned to the left
+        Button buttonsAlignedLeft = new Button("Buttons aligned to the left");
+        layout.addComponent(buttonsAlignedLeft);
+        buttonsAlignedLeft.addClickListener(new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				MessageBox.showPlain(Icon.INFO, "Left", "Now, the Buttons are aligned to the left.", ButtonId.OK, ButtonId.CANCEL).setButtonAlignment(Alignment.MIDDLE_LEFT);
+			}
+		});
+        
+        // Creates a dialog with buttons aligned to the left
+        Button customButtonCaptions = new Button("Custom button captions");
+        layout.addComponent(customButtonCaptions);
+        customButtonCaptions.addClickListener(new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				MessageBox mb = MessageBox.showPlain(Icon.INFO, "Custom button captions", "Please replace the values in the map\nde.steinwedel.messagebox.DefaultResources.BUTTON_CAPTION\nto change the default!", ButtonId.YES, ButtonId.NO);
+				mb.getButton(ButtonId.YES).setCaption("Yea");
+				mb.getButton(ButtonId.NO).setCaption("Nay");
+			}
+		});
+        
+        // Creates a dialog with a spacer between the some buttons
+        Button spacer = new Button("Buttons with spacer");
+        layout.addComponent(spacer);
+        spacer.addClickListener(new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				MessageBox.showPlain(Icon.INFO, "Using spacer", "You can use the spacer to group buttons!", ButtonId.YES, ButtonId.NO, ButtonId.SPACER, ButtonId.CLOSE);
+			}
+		});
+        
+        // Creates a dialog with buttons aligned to the left
+        Button buttonFocus = new Button("Button focused");
+        layout.addComponent(buttonFocus);
+        buttonFocus.addClickListener(new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				MessageBox mb = MessageBox.showPlain(Icon.INFO, "Button focused", "The 'Save' button is focused!", ButtonId.SAVE, ButtonId.CANCEL);
+				mb.getButton(ButtonId.SAVE).focus();
+			}
+		});
+        
+        // Message with HTML
+        Button html = new Button("Message with HTML");
+        layout.addComponent(html);
+        html.addClickListener(new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				MessageBox.showHTML(Icon.INFO, "HTML message", "Some HTML: <b>bold</b> <i>italic</i><br/>A new line etc.", ButtonId.CLOSE);
+			}
+		});
+        
+        // Creates a dialog with buttons aligned to the left
+        Button customButtonWidth = new Button("Custom button width");
+        layout.addComponent(customButtonWidth);
+        customButtonWidth.addClickListener(new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				MessageBox mb = MessageBox.showPlain(Icon.INFO, "Custom button width", "Button with custom width!", ButtonId.YES, ButtonId.NO);
+				mb.getButton(ButtonId.NO).setCaption("Really, really no");
+				mb.setButtonWidth("150px");
+			}
+		});
+        
+        // Custom icon for button and dialog
+        
+        // Custom Component
+        
     }
 
 }
