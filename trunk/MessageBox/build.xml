@@ -16,13 +16,8 @@
 			destdir="build/ant"
 			classpathref="lib"/>
 	</target>
-
-	<target name="dist" depends="compile" description="generate the distribution">
-		<jar 
-			jarfile="dist/messagebox.jar" 
-			basedir="build/ant"
-			manifest="META-INF/MANIFEST.MF"/>
-		
+	
+	<target name="javadoc" description="javadoc">
 		<delete dir="javadoc"/>
 		<javadoc 
 			sourcepath="src/main"
@@ -33,7 +28,14 @@
 		    use="true"
 		    windowtitle="MessageBox API"
 			classpathref="lib"/>
-		
+	</target>
+
+	<target name="dist" depends="compile, javadoc" description="generate the distribution">
+		<jar 
+			jarfile="dist/messagebox.jar" 
+			basedir="build/ant"
+			manifest="META-INF/MANIFEST.MF"/>
+				
 		<zip destfile="dist/messagebox.zip">
 			<fileset dir="dist">
     			<exclude name="*.zip"/>
