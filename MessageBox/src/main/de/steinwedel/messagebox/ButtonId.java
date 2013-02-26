@@ -1,7 +1,7 @@
 package de.steinwedel.messagebox;
 
 /**
- * An enumeration for identifying the nature of the button. The ButtonId is used inside then Eventlistener. 
+ * An enumeration for identifying the nature of the button. The ButtonId is used inside then {@link MessageBoxListener}. 
  * 
  * @author Dieter Steinwedel
  */
@@ -85,6 +85,14 @@ public enum ButtonId {
 	/**
 	 * Use this, if you want to increase the padding between two buttons.
 	 */
-	SPACER
+	SPACER;
+	
+	/**
+	 * Returns the key for the I18n.
+	 */
+	@Override
+	public String toString() {
+		return "mb_" + name();
+	}
 	
 }
