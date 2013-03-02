@@ -35,7 +35,7 @@ import com.vaadin.ui.Window;
  * </ul>
  * </p>
  * <p>Now, real I18n is supported via {@code java.util.ResourceBundle}. Even a new feature is, that 
- * dialog size is determined automatically from the message itself - but can be overridden explicitly, if required.
+ * the dialog size is determined automatically from the message itself - but it can be overridden explicitly, if required.
  * You need less code to show a messagebox in compare to version 1.x of this add-on. Even the naming, packaging and javadoc has been improved.  
  * </p>
  * <p><b>USAGE</b></p>
