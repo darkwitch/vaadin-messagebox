@@ -1,7 +1,7 @@
 <project name="MessageBox" default="dist" basedir=".">
 
 	<path id="lib">
-		<fileset dir="WebContent/WEB-INF/lib"/>
+		<fileset dir="lib"/>
 	</path>
 	
 	<target name="init" depends="clean">
@@ -33,8 +33,12 @@
 	<target name="dist" depends="compile, javadoc" description="generate the distribution">
 		<jar 
 			jarfile="dist/messagebox.jar" 
-			basedir="build/ant"
-			manifest="META-INF/MANIFEST.MF"/>
+			manifest="META-INF/MANIFEST.MF">
+			<fileset dir="build/ant"/>
+			<fileset dir="src/main">
+				<include name="**/*.png"/>
+			</fileset>
+		</jar>
 				
 		<zip destfile="dist/messagebox.zip">
 			<fileset dir="dist">
