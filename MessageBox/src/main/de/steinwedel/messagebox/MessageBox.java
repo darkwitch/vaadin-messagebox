@@ -17,7 +17,52 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
-
+/**
+ * <p><b>DESCRIPTION AND FEATURES</b></p>
+ * <p>MessageBox is a flexible utility class for generating different styles of messageboxes. 
+ * The messagebox is typically a modal dialog, with an icon on the left side, 
+ * a message on the right of the icon and some buttons on the bottom of the dialog.
+ * </p> 
+ * <p>E.g. you can define/customize 
+ * <ul>
+ * <li>the window caption</li>
+ * <li>different types of icons (see {@link Icon})</li>
+ * <li>a message as plain string or HTML or with a custom component</li>
+ * <li>which and how many buttons are placed on the dialog</li>
+ * <li>the icon and appearance of the buttons</li>
+ * <li>the buttons alignment (left, centered, right)</li>
+ * <li>one simple event listener (see {@link MessageBoxListener}) for all buttons</li>
+ * </ul>
+ * </p>
+ * <p>Now, real I18n is supported via {@code java.util.ResourceBundle}. Even a new feature is, that 
+ * dialog size is determined automatically from the message itself - but can be overridden explicitly, if required.
+ * You need less code to show a messagebox in compare to version 1.x of this add-on. Even the naming, packaging and javadoc has been improved.  
+ * </p>
+ * <p><b>USAGE</b></p>
+ * <p>
+ * <code><pre>MessageBox.showPlain(Icon.INFO, "Example 1", "Hello World!", ButtonId.OK);</pre></code>
+ * This example shows a simple message dialog, with "Example 1" as dialog 
+ * caption, an info icon, "Hello World!" as message and an "Ok" labeled button. The 
+ * dialog is displayed modally. To receive an event of the pressed button, add an event listener (see 
+ * {@link MessageBoxListener}). I have added a demo class (Demo.java) with many examples, to show most of the possible use cases.
+ * There are many more ways to display and customize a messagebox.</p>
+ * <br>
+ * <p><b>LICENSE</b></p>
+ * <p>The licenses are suitable for commercial usage.</p>
+ * 
+ * <p>Code license: Apache License 2.0</p>
+ * 
+ * <p>Dialog icons:
+ * <ul><li>Author: Dieter Steinwedel</li>
+ * <li>License: Creative Commons Attribution 2.5 License</li></ul></p>  
+ * 
+ * <p>Button icons:
+ * <ul><li>Author: Mark James</li>
+ * <li>URL: <a href="http://www.famfamfam.com/lab/icons/silk/">http://www.famfamfam.com/lab/icons/silk/</a></li>
+ * <li>License: Creative Commons Attribution 2.5 License</li></ul></p>
+ * 
+ * @author Dieter Steinwedel
+ */
 public class MessageBox implements ClickListener {
 	
 	private static final long serialVersionUID = 1L;
@@ -25,7 +70,7 @@ public class MessageBox implements ClickListener {
 	// default configurations =================================================
 	
 	/**
-	 * You can override the class {@see ResourceFactory} to customize the default icons. Even the I18n for button captions is implemented in this class. 
+	 * You can override the class {@link ResourceFactory} to customize the default icons. Even the I18n for button captions is implemented in this class. 
 	 */
 	public static ResourceFactory RESOURCE_FACTORY = new ResourceFactory();
 
@@ -48,7 +93,7 @@ public class MessageBox implements ClickListener {
 	public Alignment DEFAULT_BUTTON_ALIGNMENT = Alignment.MIDDLE_RIGHT;
 	
 	/**
-	 * You can implement transitions inside the {@see TransitionListener}. 
+	 * You can implement transitions inside the {@link TransitionListener}. 
 	 */
 	public static TransitionListener TRANSITION_LISTENER;
 	
@@ -68,16 +113,54 @@ public class MessageBox implements ClickListener {
 	
 	// dialog specific configurations =========================================
 	
+	/**
+	 * Keeps the reference to the window of the messagebox.
+	 */
 	protected Window window;
+	
+	/**
+	 * The main layout for the messagebox.
+	 */
 	protected VerticalLayout mainLayout;
+	
+	/**
+	 * The content layout for the messagebox. It is the first item in the {@link #mainLayout}.
+	 */
 	protected HorizontalLayout contentLayout;
+	
+	/**
+	 * The button layout for the messagebox. It is the second item in the {@link #mainLayout}.
+	 */
 	protected HorizontalLayout buttonLayout;
 	
+	/**
+	 * The dialog icon for the message box. It is typically the first item in the {@link #contentLayout}.
+	 */
 	protected Embedded iconEmbedded;
+	
+	/**
+	 * The title of the messagebox.
+	 */
 	protected String title;
+	
+	/**
+	 * The component, that displays message. By default it is a label. Typically, this component is the second item in the {@link #contentLayout}.
+	 */
 	protected Component messageComponent;
+	
+	/**
+	 * The listener is triggered, if set and a button of the messagebox is pressed.
+	 */
 	protected MessageBoxListener listener;
+	
+	/**
+	 * The configured buttons (and spacers) for the messagebox. They are displayed in the {@link #buttonLayout}.
+	 */
 	protected ArrayList<Component> buttons;
+	
+	/**
+	 * Keeps the status, if the dialog should be closed automatically after pressing a button or not.
+	 */
 	protected boolean autoClose;
 	
 	// constructors ===========================================================
@@ -109,8 +192,8 @@ public class MessageBox implements ClickListener {
 	
 	/**
 	 * Returns the corresponding Button to the buttonId. This is useful, if you want to customize the button.
-	 * @param buttonId The button with the corresponding {@see ButtonId}
-	 * @return Returns the <code>Button</code>, if a corresponding button was found. Otherwise null is returned.
+	 * @param buttonId The button with the corresponding {@link ButtonId}
+	 * @return Returns the {@link <a href="http://vaadin.com/api/com/vaadin/ui/Button.html">com.vaadin.ui.Button</a>}, if a corresponding button was found. Otherwise null is returned.
 	 */
 	public Button getButton(ButtonId buttonId) {
 		for (Component c : buttons) {
@@ -128,7 +211,7 @@ public class MessageBox implements ClickListener {
 	 * Forces a width for the messagebox.
 	 * @param width The forced width.
 	 * @param unit The unit for the width.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public MessageBox setWidth(String width) {
 		window.setWidth(width);
@@ -144,7 +227,7 @@ public class MessageBox implements ClickListener {
 	 * Forces a width for the messagebox.
 	 * @param width The forced width.
 	 * @param unit The unit for the width.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public MessageBox setWidth(float width, Unit unit) {
 		window.setWidth(width, unit);
@@ -159,7 +242,7 @@ public class MessageBox implements ClickListener {
 	/**
 	 * Forces a height for the messagebox.
 	 * @param height The forced height.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public MessageBox setHeight(String height) {
 		window.setHeight(height);
@@ -175,7 +258,7 @@ public class MessageBox implements ClickListener {
 	 * Forces a height for the messagebox.
 	 * @param height The forced height.
 	 * @param unit The unit for the height.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public MessageBox setHeight(float height, Unit unit) {
 		window.setHeight(height, unit);
@@ -190,7 +273,7 @@ public class MessageBox implements ClickListener {
 	/**
 	 * Switches, if the dialog is shown modal or not.
 	 * @param modal If set to <code>true</code>, the dialog is shown modal.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public MessageBox setModal(boolean modal) {
 		window.setModal(modal);
@@ -200,7 +283,7 @@ public class MessageBox implements ClickListener {
 	/**
 	 * Switches, if the dialog is automatically closed after clicking a button.
 	 * @param autoClose Close the dialog automatically, if set to <code>true</code>.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public MessageBox setAutoClose(boolean autoClose) {
 		this.autoClose = autoClose;
@@ -210,7 +293,7 @@ public class MessageBox implements ClickListener {
 	/**
 	 * Customizes the button alignment. 
 	 * @param alignment The new button alignment.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public MessageBox setButtonAlignment(Alignment alignment) {
 		mainLayout.setComponentAlignment(buttonLayout, alignment);
@@ -220,7 +303,7 @@ public class MessageBox implements ClickListener {
 	/**
 	 * Sets the button width of all buttons for a symmetric appearance.
 	 * @param width The button width.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public MessageBox setButtonWidth(String width) {
 		for (Component c : buttons) {
@@ -236,7 +319,7 @@ public class MessageBox implements ClickListener {
 	 * Sets the button width of all buttons for a symmetric appearance.
 	 * @param width The button width.
 	 * @param unit The Unit.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public MessageBox setButtonWidth(float width, Unit unit) {
 		for (Component c : buttons) {
@@ -272,7 +355,7 @@ public class MessageBox implements ClickListener {
 	 * @param title The title of the dialog.
 	 * @param plainTextMessage The message as plain text.
 	 * @param buttonIds The displayed buttons.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public static MessageBox showPlain(Icon icon, String title, String plainTextMessage, ButtonId... buttonIds) {
 		return showPlain(icon, title, plainTextMessage, null, buttonIds);
@@ -284,7 +367,7 @@ public class MessageBox implements ClickListener {
 	 * @param title The title of the dialog.
 	 * @param plainTextMessage The message as plain text.
 	 * @param buttonIds The displayed buttons
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public static MessageBox showPlain(Resource iconResource, String title, String plainTextMessage, ButtonId... buttonIds) {
 		return showPlain(iconResource, title, plainTextMessage, null, buttonIds);
@@ -297,7 +380,7 @@ public class MessageBox implements ClickListener {
 	 * @param plainTextMessage The message as plain text.
 	 * @param listener The event listener, that is triggered on clicking a button.
 	 * @param buttonIds The displayed buttons.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public static MessageBox showPlain(Icon icon, String title, String plainTextMessage, MessageBoxListener listener, ButtonId... buttonIds) {
 		return showHTML(icon, title, encodeToHtml(plainTextMessage), listener, buttonIds);
@@ -310,7 +393,7 @@ public class MessageBox implements ClickListener {
 	 * @param plainTextMessage The message as plain text.
 	 * @param listener The event listener, that is triggered on clicking a button.
 	 * @param buttonIds The displayed buttons.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public static MessageBox showPlain(Resource iconResource, String title, String plainTextMessage, MessageBoxListener listener, ButtonId... buttonIds) {
 		return showHTML(iconResource, title, encodeToHtml(plainTextMessage), listener, buttonIds);
@@ -322,7 +405,7 @@ public class MessageBox implements ClickListener {
 	 * @param title The title of the dialog.
 	 * @param htmlMessage The message as HTML.
 	 * @param buttonIds The displayed buttons.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public static MessageBox showHTML(Icon icon, String title, String htmlMessage, ButtonId... buttonIds) {
 		return showHTML(icon, title, htmlMessage, null, buttonIds);
@@ -334,7 +417,7 @@ public class MessageBox implements ClickListener {
 	 * @param title The title of the dialog.
 	 * @param htmlMessage The message as HTML.
 	 * @param buttonIds The displayed buttons.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public static MessageBox showHTML(Resource iconResource, String title, String htmlMessage, ButtonId... buttonIds) {
 		return showHTML(iconResource, title, htmlMessage, null, buttonIds);
@@ -347,7 +430,7 @@ public class MessageBox implements ClickListener {
 	 * @param htmlMessage The message as HTML.
 	 * @param listener The event listener, that is triggered on clicking a button.
 	 * @param buttonIds The displayed buttons.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public static MessageBox showHTML(Icon icon, String title, String htmlMessage, MessageBoxListener listener, ButtonId... buttonIds) {
 		return showCustomized(icon, title, new Label(htmlMessage, ContentMode.HTML), listener, buttonIds);
@@ -360,7 +443,7 @@ public class MessageBox implements ClickListener {
 	 * @param htmlMessage The message as HTML.
 	 * @param listener The event listener, that is triggered on clicking a button.
 	 * @param buttonIds The displayed buttons.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public static MessageBox showHTML(Resource iconResource, String title, String htmlMessage, MessageBoxListener listener, ButtonId... buttonIds) {
 		return showCustomized(iconResource, title, new Label(htmlMessage, ContentMode.HTML), listener, buttonIds);
@@ -372,7 +455,7 @@ public class MessageBox implements ClickListener {
 	 * @param title The title of the dialog.
 	 * @param messageComponent The custom component for the message.
 	 * @param buttonIds The displayed buttons.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public static MessageBox showCustomized(Icon icon, String title, Component messageComponent, ButtonId... buttonIds) {
 		return showCustomized(icon, title, messageComponent, null, buttonIds);
@@ -385,7 +468,7 @@ public class MessageBox implements ClickListener {
 	 * @param messageComponent The custom component for the message.
 	 * @param listener The event listener, that is triggered on clicking a button.
 	 * @param buttonIds The displayed buttons.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public static MessageBox showCustomized(Icon icon, String title, Component messageComponent, MessageBoxListener listener, ButtonId... buttonIds) {
 		MessageBox result = showCustomized(RESOURCE_FACTORY.getIcon(icon), title, messageComponent, listener, buttonIds);
@@ -404,7 +487,7 @@ public class MessageBox implements ClickListener {
 	 * @param messageComponent The custom component for the message.
 	 * @param listener The event listener, that is triggered on clicking a button.
 	 * @param buttonIds The displayed buttons.
-	 * @return The {@see MessageBox} instance itself.
+	 * @return The {@link MessageBox} instance itself.
 	 */
 	public static MessageBox showCustomized(Resource iconResource, String title, Component messageComponent, MessageBoxListener listener, ButtonId... buttonIds) {
 		MessageBox result = new MessageBox(iconResource, title, messageComponent, listener, buttonIds);
@@ -524,8 +607,8 @@ public class MessageBox implements ClickListener {
 
 	// ClickListener implementation ===========================================
 	
-	/*
-	 * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
+	/**
+	 * See {@link {@link <a href="http://vaadin.com/api/com/vaadin/ui/Button.ClickListener.html#buttonClick(com.vaadin.ui.Button.ClickEvent)">com.vaadin.ui.Button.ClickListener.buttonClick(com.vaadin.ui.Button.ClickEvent)}</a>}
 	 */
 	@Override
 	public void buttonClick(ClickEvent event) {

@@ -1,7 +1,7 @@
 package de.steinwedel.messagebox;
 
 /**
- * An enumeration to address easily the displayed icon for the dialog.
+ * An enumeration to easily address the displayed icon for the dialog.
  * 
  * @author Dieter Steinwedel
  */

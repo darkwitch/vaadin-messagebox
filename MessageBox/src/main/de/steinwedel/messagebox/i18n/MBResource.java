@@ -5,14 +5,14 @@ import java.util.ListResourceBundle;
 import de.steinwedel.messagebox.ButtonId;
 
 /**
- * I18n for the button captions. Default values (English).
+ * I18n for the button captions. The Default values are English.
  * 
  * @author Dieter Steinwedel
  */
 public class MBResource extends ListResourceBundle {
 
-	/*
-	 * @see java.util.ListResourceBundle#getContents()
+	/**
+	 * See {@link java.util.ListResourceBundle#getContents()}
 	 */
 	@Override
 	protected Object[][] getContents() {

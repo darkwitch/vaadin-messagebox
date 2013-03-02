@@ -14,9 +14,10 @@ import com.vaadin.ui.Label;
 import de.steinwedel.messagebox.i18n.MBResource;
 
 /**
- * Manages the loading of default resources. You can override the method <code>getIcon</code> to use customized icons.
- * The overridden <code>DefaultResources</code> must be set to the static member <code>DEFAULT_RESOURCES</code> of the class <code>MessageBox</code>.
- * You can change the default captions of the buttons by using a different <code>ResourceBundle</code>. 
+ * Manages the loading of default resources like icons and button captions. You can override the method <code>getIcon</code> to use customized icons.
+ * The overridden <code>DefaultResources</code> must be set to the static member {@link MessageBox#RESOURCE_FACTORY}.
+ * You can change the default captions of the buttons by using a different {@link java.util.ResourceBundle}. 
+ * You can assign the new {@link java.util.ResourceBundle} with the method {@link #setResourceBundle(java.lang.String)} or {@link #setResourceBundle(java.lang.String, java.util.Locale)} . 
  * 
  * @author Dieter Steinwedel
  */
