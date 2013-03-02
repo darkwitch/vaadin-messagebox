@@ -22,7 +22,8 @@ import de.steinwedel.messagebox.MessageBoxListener;
 
 /**
  * Demo Application for messagesboxes.
- * URL: http://localhost:8080/MessageBox/?restartApplication
+ * 
+ * URL is http://localhost:8080/MessageBox/?restartApplication
  */
 public class Demo extends UI {
 
