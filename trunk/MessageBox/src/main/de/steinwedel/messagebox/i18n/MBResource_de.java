@@ -5,14 +5,14 @@ import java.util.ListResourceBundle;
 import de.steinwedel.messagebox.ButtonId;
 
 /**
- * I18n for the button captions. German translation.
+ * I18n for the button captions. Here is the German translation implemented.
  * 
  * @author Dieter Steinwedel
  */
 public class MBResource_de extends ListResourceBundle {
 
-	/*
-	 * @see java.util.ListResourceBundle#getContents()
+	/**
+	 * See {@link java.util.ListResourceBundle#getContents()}
 	 */
 	@Override
 	protected Object[][] getContents() {
@@ -22,7 +22,7 @@ public class MBResource_de extends ListResourceBundle {
 		        {ButtonId.CANCEL.toString(), "Abbrechen"},
 		        {ButtonId.YES.toString(), "Ja"},
 		        {ButtonId.NO.toString(), "Nein"},
-		        {ButtonId.CLOSE.toString(), "Schlieﬂen"},
+		        {ButtonId.CLOSE.toString(), "Schlie√üen"},
 		        {ButtonId.SAVE.toString(), "Speichern"},
 		        {ButtonId.RETRY.toString(), "Wiederholen"},
 		        {ButtonId.IGNORE.toString(), "Ignorieren"},

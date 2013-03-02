@@ -12,7 +12,7 @@ public interface MessageBoxListener {
 	 * The method is triggered when a button of the message box is pressed. The
 	 * parameter describes, which configured button was pressed.
 	 * 
-	 * @param buttonId the buttonId of the pressed button
+	 * @param buttonId 	The buttonId of the pressed button.
 	 */
 	public void buttonClicked(ButtonId buttonId);
 

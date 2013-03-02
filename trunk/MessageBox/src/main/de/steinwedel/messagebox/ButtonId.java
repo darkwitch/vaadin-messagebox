@@ -1,7 +1,7 @@
 package de.steinwedel.messagebox;
 
 /**
- * An enumeration for identifying the nature of the button. The ButtonId is used inside then {@link MessageBoxListener}. 
+ * An enumeration for identifying the kind of the button. The value affects the displayed button icon and caption.
  * 
  * @author Dieter Steinwedel
  */
@@ -53,7 +53,7 @@ public enum ButtonId {
 	IGNORE,
 	
 	/**
-	 * Self-explaining. Keep in mind, that the window will not be closed, if this value is received!
+	 * Self-explaining. Keep in mind, that the dialog will not be closed, if the corresponding button is pressed!
 	 */
 	HELP,
 	
