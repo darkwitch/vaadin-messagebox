@@ -210,7 +210,6 @@ public class MessageBox implements ClickListener {
 	/**
 	 * Forces a width for the messagebox.
 	 * @param width The forced width.
-	 * @param unit The unit for the width.
 	 * @return The {@link MessageBox} instance itself.
 	 */
 	public MessageBox setWidth(String width) {
