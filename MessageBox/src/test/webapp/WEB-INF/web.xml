@@ -12,7 +12,7 @@
         <init-param>
             <description>UI to display for the add-on component demo</description>
             <param-name>UI</param-name>
-            <param-value>de.steinwedel.vaadin.addon.messagebox.demo.DemoUI</param-value>
+            <param-value>de.steinwedel.messagebox.demo.DemoUI</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
