@@ -1,4 +1,4 @@
-package de.steinwedel.vaadin.addon.messagebox.demo;
+package de.steinwedel.messagebox.demo;
 
 import java.util.Locale;
 
