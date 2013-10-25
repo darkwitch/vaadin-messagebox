@@ -129,7 +129,7 @@
 						<manifestEntries>
 							<!-- Package format version - do not change -->
 							<Vaadin-Package-Version>1</Vaadin-Package-Version>
-							<Vaadin-Widgetsets>de.steinwedel.vaadin.addon.messagebox.WidgetSet</Vaadin-Widgetsets>
+							<Vaadin-Widgetsets>de.steinwedel.messagebox.WidgetSet</Vaadin-Widgetsets>
 							
 						</manifestEntries>
 					</archive>
