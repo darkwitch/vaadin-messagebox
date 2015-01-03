@@ -26,7 +26,7 @@ public class ResourceFactory implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * The basename of <code>ResourceBundle<code> for displaying localized button captions. Is set to {@link MBResource} as default.
+	 * The basename of <code>ResourceBundle</code> for displaying localized button captions. Is set to {@link MBResource} as default.
 	 */
 	private String basename = MBResource.class.getName();
 	
@@ -135,7 +135,7 @@ public class ResourceFactory implements Serializable {
 
 	/**
 	 * Forces a specific locale on the current used <code>ResourceBundle</code>.
-	 * @param locale
+	 * @param locale The new locale
 	 */
 	public void setResourceLocale(Locale locale) {
 		resourceBundle = ResourceBundle.getBundle(basename, locale);

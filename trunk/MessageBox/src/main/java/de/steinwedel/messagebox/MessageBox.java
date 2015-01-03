@@ -23,7 +23,7 @@ import com.vaadin.ui.Window;
  * The messagebox is typically a modal dialog, with an icon on the left side, 
  * a message on the right of the icon and some buttons on the bottom of the dialog.
  * </p> 
- * <p>E.g. you can define/customize 
+ * <p>E.g. you can define/customize</p>
  * <ul>
  * <li>the window caption</li>
  * <li>different types of icons (see {@link Icon})</li>
@@ -33,14 +33,13 @@ import com.vaadin.ui.Window;
  * <li>the buttons alignment (left, centered, right)</li>
  * <li>one simple event listener (see {@link MessageBoxListener}) for all buttons</li>
  * </ul>
- * </p>
  * <p>Now, real I18n is supported via {@code java.util.ResourceBundle}. Even a new feature is, that 
  * the dialog size is determined automatically from the message itself - but it can be overridden explicitly, if required.
  * You need less code to show a messagebox in compare to version 1.x of this add-on. Even the naming, packaging and javadoc has been improved.  
  * </p>
  * <p><b>USAGE</b></p>
  * <p>
- * <code><pre>MessageBox.showPlain(Icon.INFO, "Example 1", "Hello World!", ButtonId.OK);</pre></code>
+ * <code>MessageBox.showPlain(Icon.INFO, "Example 1", "Hello World!", ButtonId.OK);</code>
  * This example shows a simple message dialog, with "Example 1" as dialog 
  * caption, an info icon, "Hello World!" as message and an "Ok" labeled button. The 
  * dialog is displayed modally. To receive an event of the pressed button, add an event listener (see 
@@ -52,14 +51,14 @@ import com.vaadin.ui.Window;
  * 
  * <p>Code license: Apache License 2.0</p>
  * 
- * <p>Dialog icons:
+ * <p>Dialog icons:</p>
  * <ul><li>Author: Dieter Steinwedel</li>
- * <li>License: Creative Commons Attribution 2.5 License</li></ul></p>  
+ * <li>License: Creative Commons Attribution 2.5 License</li></ul>
  * 
- * <p>Button icons:
+ * <p>Button icons:</p>
  * <ul><li>Author: Mark James</li>
  * <li>URL: <a href="http://www.famfamfam.com/lab/icons/silk/">http://www.famfamfam.com/lab/icons/silk/</a></li>
- * <li>License: Creative Commons Attribution 2.5 License</li></ul></p>
+ * <li>License: Creative Commons Attribution 2.5 License</li></ul>
  * 
  * @author Dieter Steinwedel
  */
@@ -193,7 +192,7 @@ public class MessageBox implements ClickListener {
 	/**
 	 * Returns the corresponding Button to the buttonId. This is useful, if you want to customize the button.
 	 * @param buttonId The button with the corresponding {@link ButtonId}
-	 * @return Returns the {@link <a href="http://vaadin.com/api/com/vaadin/ui/Button.html">com.vaadin.ui.Button</a>}, if a corresponding button was found. Otherwise null is returned.
+	 * @return Returns the <a href="http://vaadin.com/api/com/vaadin/ui/Button.html">com.vaadin.ui.Button</a>, if a corresponding button was found. Otherwise null is returned.
 	 */
 	public Button getButton(ButtonId buttonId) {
 		for (Component c : buttons) {
@@ -607,7 +606,7 @@ public class MessageBox implements ClickListener {
 	// ClickListener implementation ===========================================
 	
 	/**
-	 * See {@link {@link <a href="http://vaadin.com/api/com/vaadin/ui/Button.ClickListener.html#buttonClick(com.vaadin.ui.Button.ClickEvent)">com.vaadin.ui.Button.ClickListener.buttonClick(com.vaadin.ui.Button.ClickEvent)}</a>}
+	 * See <a href="http://vaadin.com/api/com/vaadin/ui/Button.ClickListener.html#buttonClick(com.vaadin.ui.Button.ClickEvent)">com.vaadin.ui.Button.ClickListener.buttonClick(com.vaadin.ui.Button.ClickEvent)</a>
 	 */
 	@Override
 	public void buttonClick(ClickEvent event) {
