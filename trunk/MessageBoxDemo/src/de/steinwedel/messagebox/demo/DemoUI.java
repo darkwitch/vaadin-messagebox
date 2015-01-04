@@ -521,9 +521,9 @@ public class DemoUI extends UI {
 				// google translate stuff!
 				
 				// Some boilerplate code ...
-				MessageBox mb = MessageBox.showPlain(Icon.QUESTION, 
+				MessageBox mb = MessageBox.showHTML(Icon.QUESTION, 
 						"Switch I18N", 
-						"Switch the internationalization. Currently are German and English supported.\nCall 'MessageBox.RESOURCES_FACTORY.setResourceBundle(<basename>);' for using your own resource bundle.", 
+						"Switch the internationalization. Currently are German and English supported.<br>Call <i><code>MessageBox.RESOURCES_FACTORY.setResourceBundle(<basename>);</code></i> for using your own resource bundle.", 
 						new MessageBoxListener() {
 					
 							@Override
@@ -543,8 +543,14 @@ public class DemoUI extends UI {
 						}, 
 						ButtonId.CUSTOM_1, 
 						ButtonId.CUSTOM_2);
-				mb.getButton(ButtonId.CUSTOM_1).setCaption("German");
-				mb.getButton(ButtonId.CUSTOM_2).setCaption("English");
+				
+				Button buttonGerman = mb.getButton(ButtonId.CUSTOM_1);
+				buttonGerman.setIcon(new ClassResource(DemoUI.class, "german.png"));
+				buttonGerman.setCaption("German");
+				
+				Button buttonEnglish = mb.getButton(ButtonId.CUSTOM_2);
+				buttonEnglish.setIcon(new ClassResource(DemoUI.class, "english.png"));
+				buttonEnglish.setCaption("English");
 			}
 			
 		});
