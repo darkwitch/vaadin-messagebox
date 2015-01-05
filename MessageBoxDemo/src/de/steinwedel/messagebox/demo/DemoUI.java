@@ -177,7 +177,7 @@ public class DemoUI extends UI {
 						Icon.INFO, 
 						"Many buttons", 
 						"You can define a lot of buttons. But notice, user don't like overloaded dialogs.", 
-						ButtonId.YES, ButtonId.NO, ButtonId.IGNORE, ButtonId.RETRY, ButtonId.HELP);
+						ButtonId.YES, ButtonId.NO, ButtonId.IGNORE, ButtonId.RETRY, ButtonId.CANCEL);
 			}
 			
 		});
@@ -554,6 +554,82 @@ public class DemoUI extends UI {
 			}
 			
 		});
+        addExample("Help button", "Shows the behaviour of the help button that differs from all other buttons.", new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+			private MessageBox mb;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// The help button does not close the message dialog like other
+				// buttons. Typically, you open a help window keeping the 
+				// current messagebox open. In this example the help dialog is 
+				// even a messagebox. A special feature of the help dialog is
+				// that it is non-modal. You can make a messagebox non-modal
+				// with calling setModal(false).
+				
+				mb = MessageBox.showPlain(
+						Icon.INFO, 
+						"Help Button", 
+						"The dialog does not close the message dialog. Other buttons do!", 
+						new MessageBoxListener() {
+
+							private MessageBox helpMB;
+							
+							@Override
+							public void buttonClicked(ButtonId buttonId) {
+								if (ButtonId.HELP.equals(buttonId)) {
+									helpMB = MessageBox.showPlain(
+											Icon.NONE, 
+											"Help", 
+											"Here, you can explain something.\nThis dialog does not need to be a messagebox,\nbut you can use it, if you like.", 
+											ButtonId.CLOSE);
+									helpMB.setModal(false);
+									helpMB.getWindow().setPositionX(mb.getWindow().getPositionX() + 500);
+									helpMB.getWindow().setPositionY(mb.getWindow().getPositionY());
+								} else {
+									if (helpMB != null) helpMB.close();
+								}
+							}
+							
+						},
+						ButtonId.CLOSE, 
+						ButtonId.HELP);
+			}
+		});
+        addExample("Disable auto-close", "You can disable the auto-closing of the dialog.", new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+			private int count;
+			private MessageBox mb;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// If you want to implement in the listener yourself
+				// when the dialog is closed, call setAutoClose(false).
+				
+				count = 0;
+				
+				mb = MessageBox.showPlain(
+						Icon.INFO, 
+						"Disable auto-close", 
+						"You must click the button twice to close the dialog.",
+						new MessageBoxListener() {
+
+							@Override
+							public void buttonClicked(ButtonId buttonId) {
+								if (++count >= 2) mb.close();
+								Notification.show("Button clicks: " + count, "", Notification.Type.WARNING_MESSAGE);
+							}
+							
+						},
+						ButtonId.CLOSE);
+				
+				// Disable auto-close
+				mb.setAutoClose(false);
+			}
+		});
+
     }
 
 }
