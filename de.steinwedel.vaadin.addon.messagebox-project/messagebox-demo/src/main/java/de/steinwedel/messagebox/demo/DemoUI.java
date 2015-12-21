@@ -85,7 +85,7 @@ public class DemoUI extends UI {
 		InputStream is = null;
 		source = "";
 		try {
-			URL url = new URL("http://sourceforge.net/p/messagebox/code/HEAD/tree/trunk/MessageBoxDemo/src/de/steinwedel/messagebox/demo/DemoUI.java?format=raw");
+			URL url = new URL("http://sourceforge.net/p/messagebox/code/HEAD/tree/trunk/de.steinwedel.vaadin.addon.messagebox-project/messagebox-demo/src/main/java/de/steinwedel/messagebox/demo/DemoUI.java?format=raw");
 			URLConnection con = url.openConnection();
 			is = con.getInputStream();
 			String encoding = con.getContentEncoding();
