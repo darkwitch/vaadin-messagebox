@@ -1,8 +1,11 @@
 package de.steinwedel.messagebox;
 
-import java.util.ArrayList;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Locale;
 
-import com.vaadin.server.Resource;
+import com.vaadin.client.ui.Icon;
+import com.vaadin.server.VaadinService;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -16,6 +19,12 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+import de.steinwedel.messagebox.i18n.ButtonCaptionFactory;
+import de.steinwedel.messagebox.icons.ButtonIconFactory;
+import de.steinwedel.messagebox.icons.ClassicButtonIconFactory;
+import de.steinwedel.messagebox.icons.ClassicDialogIconFactory;
+import de.steinwedel.messagebox.icons.DialogIconFactory;
 
 /**
  * <p><b>DESCRIPTION AND FEATURES</b></p>
@@ -62,53 +71,52 @@ import com.vaadin.ui.Window;
  * 
  * @author Dieter Steinwedel
  */
-public class MessageBox implements ClickListener {
+public class MessageBox implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
 	// default configurations =================================================
-	
-	/**
-	 * You can override the class {@link ResourceFactory} to customize the default icons. Even the I18n for button captions is implemented in this class. 
-	 */
-	public static ResourceFactory RESOURCE_FACTORY = new ResourceFactory();
 
-	/**
-	 * Switches the default behavior the window between modal and none-modal.
-	 * The default value is <code>true</code>.
-	 */
-	public static boolean DEFAULT_MODAL = true;
-	
-	/**
-	 * Configures the default behavior, if the dialog is automatically closed or not after a dialog button is clicked.
-	 * The default value is <code>true</code>.
-	 */
-	public boolean DEFAULT_AUTO_CLOSE = true;
-	
-	/**
-	 * Configures the default button alignment.
-	 * The default value is <code>Alignment.MIDDLE_RIGHT</code>.
-	 */
-	public Alignment DEFAULT_BUTTON_ALIGNMENT = Alignment.MIDDLE_RIGHT;
-	
 	/**
 	 * You can implement transitions inside the {@link TransitionListener}. 
 	 */
-	public static TransitionListener TRANSITION_LISTENER;
+	private static TransitionListener DIALOG_DEFAULT_TRANSITION_LISTENER;
+	
+	private static Locale DIALOG_DEFAULT_LOCALE = Locale.ENGLISH;
+	
+	/**
+	 * You can override the class {@link DialogIconFactory} to customize the default dialog icons. 
+	 */
+	private static DialogIconFactory DIALOG_DEFAULT_ICON_FACTORY = new ClassicDialogIconFactory();
 	
 	/**
 	 * Defines the default width of the dialog icon. It is recommended to set it unequal '-1px', 
 	 * because otherwise there is re-rendering of dialog recognizable when the dialog is displayed.
 	 * The cause is, that the icon is lazy loaded. 
 	 */
-	public static String DEFAULT_ICON_WIDTH = "48px";
+	private static String DIALOG_DEFAULT_ICON_WIDTH = "48px";
 	
 	/**
 	 * Defines the default height of the dialog icon. It is recommended to set it unequal '-1px', 
 	 * because otherwise there is re-rendering of dialog recognizable when the dialog is displayed.
 	 * The cause is, that the icon is lazy loaded. 
 	 */
-	public static String DEFAULT_ICON_HEIGHT = "48px";
+	private static String DIALOG_DEFAULT_ICON_HEIGHT = "48px";
+
+	/**
+	 * Configures the default button alignment.
+	 * The default value is <code>Alignment.MIDDLE_RIGHT</code>.
+	 */
+	private static Alignment BUTTON_DEFAULT_ALIGNMENT = Alignment.MIDDLE_RIGHT;
+	
+	private static ButtonCaptionFactory BUTTON_DEFAULT_CAPTION_FACTORY = new ButtonCaptionFactory();
+	
+	/**
+	 * You can override the class {@link DialogIconFactory} to customize the default dialog icons. 
+	 */
+	private static ButtonIconFactory BUTTON_DEFAULT_ICON_FACTORY = new ClassicButtonIconFactory();
+	
+	//TODO disable icons
 	
 	// dialog specific configurations =========================================
 	
@@ -135,83 +143,261 @@ public class MessageBox implements ClickListener {
 	/**
 	 * The dialog icon for the message box. It is typically the first item in the {@link #contentLayout}.
 	 */
-	protected Embedded iconEmbedded;
-	
-	/**
-	 * The title of the messagebox.
-	 */
-	protected String title;
+	protected Embedded icon;
 	
 	/**
 	 * The component, that displays message. By default it is a label. Typically, this component is the second item in the {@link #contentLayout}.
 	 */
 	protected Component messageComponent;
 	
-	/**
-	 * The listener is triggered, if set and a button of the messagebox is pressed.
-	 */
-	protected MessageBoxListener listener;
+	protected String buttonWidth;
+	
+	protected boolean buttonAdded;
+	
+	protected Object data;
+	
+	// static methods =========================================================
+	
+	public static void setDialogDefaultTransitionListener(TransitionListener listener) {
+		DIALOG_DEFAULT_TRANSITION_LISTENER = listener;
+	}
+	
+	
+	public static void setDialogDefaultLanguage(Locale locale) {
+		if (locale != null) {
+			DIALOG_DEFAULT_LOCALE = locale;
+		}
+	}
+	
+	public static void setSessionLanguage(Locale locale) {
+		VaadinService.getCurrentRequest().getWrappedSession().setAttribute(ButtonCaptionFactory.LANGUAGE_SESSION_KEY, locale);
+	}
 	
 	/**
-	 * The configured buttons (and spacers) for the messagebox. They are displayed in the {@link #buttonLayout}.
+	 * @param dialogIconFactory
 	 */
-	protected ArrayList<Component> buttons;
+	public static void setDialogDefaultIconFactory(DialogIconFactory dialogIconFactory) {
+		if (dialogIconFactory != null) {
+			DIALOG_DEFAULT_ICON_FACTORY = dialogIconFactory;
+		}
+	}
 	
 	/**
-	 * Keeps the status, if the dialog should be closed automatically after pressing a button or not.
+	 * @param defaultDialogIconFactory
 	 */
-	protected boolean autoClose;
+	public static void setDialogDefaultIconWidth(String width) {
+		if (width != null) {
+			DIALOG_DEFAULT_ICON_WIDTH = width;
+		}
+	}
+	
+	/**
+	 * @param defaultDialogIconFactory
+	 */
+	public static void setDialogDefaultIconHeight(String height) {
+		if (height != null) {
+			DIALOG_DEFAULT_ICON_HEIGHT = height;
+		}
+	}
+	
+	/**
+	 * @param defaultDialogIconFactory
+	 */
+	public static void setButtonDefaultAlignment(Alignment alignment) {
+		if (alignment != null) {
+			BUTTON_DEFAULT_ALIGNMENT = alignment;
+		}
+	}
+	
+	public static void setButtonDefaultIconFactory(ButtonIconFactory factory) {
+		if (factory != null) {
+			BUTTON_DEFAULT_ICON_FACTORY = factory;
+		}
+	}
+	
+	public static void setButtonDefaultCaptionFactory(ButtonCaptionFactory factory) {
+		if (factory != null) {
+			BUTTON_DEFAULT_CAPTION_FACTORY = factory;
+		}
+	}
+	
 	
 	// constructors ===========================================================
 	
 	/**
 	 * The constructor to initialize the dialog.
-	 * @param iconResource The icon resource.
-	 * @param title	The title of the dialog
-	 * @param messageComponent The component, that displays the message.
-	 * @param listener The listener triggered on clicking a button. 
-	 * @param buttonIds A list of to displaying buttons.
 	 */
-	protected MessageBox(Resource iconResource, String title, Component messageComponent, MessageBoxListener listener, ButtonId... buttonIds) {
-		if (iconResource != null) {
-			this.iconEmbedded = new Embedded(null, iconResource);
-		}
-		this.title = title;
-		this.messageComponent = messageComponent;
-		this.listener = listener;
-		this.autoClose = DEFAULT_AUTO_CLOSE;
+	protected MessageBox() {
+		// Create window
+		window = new Window();
+		window.setClosable(false);
+		window.setModal(true);
+		window.setResizable(false);
+		window.setSizeUndefined();
 		
-		buttons = new ArrayList<Component>();
-		for (ButtonId id : buttonIds) {
-			buttons.add(RESOURCE_FACTORY.getButton(id));
-		}
+		// Create the top-level layout of the window
+		mainLayout = new VerticalLayout();
+		mainLayout.setImmediate(false);
+		mainLayout.setSizeUndefined();
+		mainLayout.setMargin(true);
+		mainLayout.setSpacing(true);
+		window.setContent(mainLayout);
+		
+		// Layout for the dialog body (icon & message)
+		contentLayout = new HorizontalLayout();
+		mainLayout.addComponent(contentLayout);
+		mainLayout.setExpandRatio(contentLayout, 1.0f);
+		contentLayout.setSizeFull();
+		contentLayout.setMargin(false);
+		contentLayout.setSpacing(true);
+		
+		// Layout for the buttons 
+		buttonLayout = new HorizontalLayout();
+		buttonLayout.setImmediate(false);
+		buttonLayout.setSizeUndefined();
+		buttonLayout.setMargin(false);
+		buttonLayout.setSpacing(true);
+		mainLayout.addComponent(buttonLayout);
+		mainLayout.setComponentAlignment(buttonLayout, BUTTON_DEFAULT_ALIGNMENT);	
+		
+		buttonAdded = false;
 	}
 	
 	// methods for customizing the dialog =====================================
 	
 	/**
-	 * Returns the corresponding Button to the buttonId. This is useful, if you want to customize the button.
-	 * @param buttonId The button with the corresponding {@link ButtonId}
-	 * @return Returns the <a href="http://vaadin.com/api/com/vaadin/ui/Button.html">com.vaadin.ui.Button</a>, if a corresponding button was found. Otherwise null is returned.
+	 * Switches, if the dialog is shown modal or not.
+	 * @param modal If set to <code>true</code>, the dialog is shown modal.
+	 * @return The {@link MessageBox} instance itself
 	 */
-	public Button getButton(ButtonId buttonId) {
-		for (Component c : buttons) {
-			if (c instanceof Button) {
-				Button b = (Button) c;
-				if (buttonId.equals(b.getData())) {
-					return b;
-				}
-			}
-		}
-		return null;
+	public MessageBox asModal(boolean modal) {
+		window.setModal(modal);
+		return this;
 	}
 	
 	/**
-	 * Forces a width for the messagebox.
-	 * @param width The forced width.
+	 * Sets an icon to the message dialog.
+	 * @param icon An embedded resource
+	 * @return The MessageBox instance itself
+	 */
+	public MessageBox asQuestion() {
+		return withIcon(DIALOG_DEFAULT_ICON_FACTORY.getQuestionIcon());
+	}
+	
+	/**
+	 * Sets an icon to the message dialog.
+	 * @param icon An embedded resource
+	 * @return The MessageBox instance itself
+	 */
+	public MessageBox asInfo() {
+		return withIcon(DIALOG_DEFAULT_ICON_FACTORY.getInfoIcon());
+	}
+	
+	/**
+	 * Sets an icon to the message dialog.
+	 * @param icon An embedded resource
+	 * @return The MessageBox instance itself
+	 */
+	public MessageBox asWarning() {
+		return withIcon(DIALOG_DEFAULT_ICON_FACTORY.getWarningIcon());
+	}
+	
+	/**
+	 * Sets an icon to the message dialog.
+	 * @param icon An embedded resource
+	 * @return The MessageBox instance itself
+	 */
+	public MessageBox asError() {
+		return withIcon(DIALOG_DEFAULT_ICON_FACTORY.getErrorIcon());
+	}
+	
+	/**
+	 * Sets an icon to the message dialog.
+	 * @param icon An embedded resource
+	 * @return The MessageBox instance itself
+	 */
+	public MessageBox withIcon(Embedded icon) {
+		return withIcon(icon, DIALOG_DEFAULT_ICON_WIDTH, DIALOG_DEFAULT_ICON_HEIGHT);
+	}
+	
+	/**
+	 * Sets an icon to the message dialog.
+	 * @param icon An embedded resource
+	 * @param width The width i.e. "48px"
+	 * @param height The height i.e. "48px"
+	 * @return The MessageBox instance itself
+	 */
+	public MessageBox withIcon(Embedded icon, String width, String height) {
+		if (this.icon != null) {
+			contentLayout.removeComponent(this.icon);
+		}
+		
+		this.icon = icon;		
+		
+		if (icon != null) {
+			contentLayout.addComponent(icon, 0);
+			contentLayout.setComponentAlignment(icon, Alignment.MIDDLE_CENTER);
+			icon.setWidth(width); 
+			icon.setHeight(height);
+		}
+		return this;
+	}
+	
+	/**
+	 * Sets the caption of the message dialog.
+	 * @param caption The caption of the message dialog
+	 * @return The MessageBox instance itself
+	 */
+	public MessageBox withCaption(String caption) {
+		window.setCaption(caption);
+		return this;
+	}
+	
+	/**
+	 * Sets a component as content to the message dialog.
+	 * @param messageComponent The component as content
+	 * @return The MessageBox instance itself
+	 */
+	public MessageBox withMessage(Component messageComponent) {
+		if (this.messageComponent != null) {
+			contentLayout.removeComponent(this.messageComponent);
+		}
+		
+		this.messageComponent = messageComponent;
+		
+		if (messageComponent != null) {
+			messageComponent.setSizeFull();
+			contentLayout.addComponent(messageComponent, contentLayout.getComponentCount());
+			contentLayout.setExpandRatio(messageComponent, 1.0f);		
+			contentLayout.setComponentAlignment(messageComponent, Alignment.MIDDLE_CENTER);
+		}
+		return this;
+	}
+	
+	/**
+	 * Sets HTML as content to the message dialog.
+	 * @param htmlMessage HTML as content
+	 * @return The MessageBox instance itself
+	 */
+	public MessageBox withHtmlMessage(String htmlMessage) {
+		return withMessage(new Label(htmlMessage, ContentMode.HTML));
+	}
+	
+	/**
+	 * Sets plain text as content to the message dialog.
+	 * @param htmlContent HTML as content
+	 * @return The MessageBox instance itself
+	 */
+	public MessageBox withMessage(String plainTextMessage) {
+		return withHtmlMessage(encodeToHtml(plainTextMessage));
+	}
+	
+	/**
+	 * Forces a width for the message dialog.
+	 * @param width The forced width
 	 * @return The {@link MessageBox} instance itself.
 	 */
-	public MessageBox setWidth(String width) {
+	public MessageBox withWidth(String width) {
 		window.setWidth(width);
 		if (-1f != window.getWidth()) {
 			mainLayout.setWidth("100%");
@@ -222,27 +408,11 @@ public class MessageBox implements ClickListener {
 	}
 	
 	/**
-	 * Forces a width for the messagebox.
-	 * @param width The forced width.
-	 * @param unit The unit for the width.
+	 * Forces a height for the message dialog.
+	 * @param height The forced height
 	 * @return The {@link MessageBox} instance itself.
 	 */
-	public MessageBox setWidth(float width, Unit unit) {
-		window.setWidth(width, unit);
-		if (-1f != window.getWidth()) {
-			mainLayout.setWidth("100%");
-		} else {
-			mainLayout.setWidth(-1f, Unit.PIXELS);
-		}
-		return this;
-	}
-	
-	/**
-	 * Forces a height for the messagebox.
-	 * @param height The forced height.
-	 * @return The {@link MessageBox} instance itself.
-	 */
-	public MessageBox setHeight(String height) {
+	public MessageBox withHeight(String height) {
 		window.setHeight(height);
 		if (-1f != window.getHeight()) {
 			mainLayout.setHeight("100%");
@@ -253,49 +423,197 @@ public class MessageBox implements ClickListener {
 	}
 	
 	/**
-	 * Forces a height for the messagebox.
-	 * @param height The forced height.
-	 * @param unit The unit for the height.
+	 * Forces a position for the message dialog.
+	 * @param x The x position
+	 * @param y The y position
 	 * @return The {@link MessageBox} instance itself.
 	 */
-	public MessageBox setHeight(float height, Unit unit) {
-		window.setHeight(height, unit);
-		if (-1f != window.getHeight()) {
-			mainLayout.setHeight("100%");
-		} else {
-			mainLayout.setHeight(-1f, Unit.PIXELS);
-		}
+	public MessageBox withDialogPosition(int x, int y) {
+		window.setPosition(x, y);
 		return this;
 	}
 	
 	/**
-	 * Switches, if the dialog is shown modal or not.
-	 * @param modal If set to <code>true</code>, the dialog is shown modal.
-	 * @return The {@link MessageBox} instance itself.
+	 * Forces a x position for the message dialog.
+	 * @param x The x position
+	 * @return The {@link MessageBox} instance itself
 	 */
-	public MessageBox setModal(boolean modal) {
-		window.setModal(modal);
+	public MessageBox withDialogPositionX(int x) {
+		window.setPositionX(x);
 		return this;
 	}
 	
 	/**
-	 * Switches, if the dialog is automatically closed after clicking a button.
-	 * @param autoClose Close the dialog automatically, if set to <code>true</code>.
-	 * @return The {@link MessageBox} instance itself.
+	 * Forces a y position for the message dialog.
+	 * @param y The y position
+	 * @return The {@link MessageBox} instance itself
 	 */
-	public MessageBox setAutoClose(boolean autoClose) {
-		this.autoClose = autoClose;
+	public MessageBox withDialogPositionY(int y) {
+		window.setPositionY(y);
 		return this;
 	}
 	
 	/**
 	 * Customizes the button alignment. 
-	 * @param alignment The new button alignment.
+	 * @param alignment The new button alignment
 	 * @return The {@link MessageBox} instance itself.
 	 */
-	public MessageBox setButtonAlignment(Alignment alignment) {
-		mainLayout.setComponentAlignment(buttonLayout, alignment);
+	public MessageBox withButtonAlignment(Alignment alignment) {
+		if (alignment != null) {
+			mainLayout.setComponentAlignment(buttonLayout, alignment);
+		}
 		return this;
+	}
+	
+	public MessageBox withButtonSpacer() {
+		buttonLayout.addComponent(new Label("&nbsp;", ContentMode.HTML));
+		return this;
+	}
+	
+	public MessageBox withSpacer() {
+		return withButtonSpacer();
+	}
+
+	public MessageBox withButton(Button button, ButtonOption... options) {
+		if (button != null) {
+			buttonLayout.addComponent(button);
+			
+			buttonAdded = true;
+			button.setImmediate(true);
+			
+			if (button.getData() != null && button.getData() instanceof Runnable) {
+				button.addClickListener(new ClickListener() {
+					
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void buttonClick(ClickEvent event) {
+						Runnable runnable = (Runnable) event.getButton().getData();
+						runnable.run();
+					}
+					
+				});
+			}
+			
+			boolean autoCloseNotFound = true;
+			for (ButtonOption option : options) {
+				option.apply(this, button);
+				if (option instanceof ButtonOption.CloseOnClick) {
+					autoCloseNotFound = false;
+				}
+			}
+			if (autoCloseNotFound) {
+				new ButtonOption.CloseOnClick(true).apply(this, button);
+			}
+		}
+		return this;
+	}
+	
+	public MessageBox withButton(ButtonType buttonType, Runnable runOnClick, ButtonOption... options) {
+		Button button = new Button(BUTTON_DEFAULT_CAPTION_FACTORY.translate(buttonType, DIALOG_DEFAULT_LOCALE));
+		button.setData(runOnClick);
+		button.setIcon(BUTTON_DEFAULT_ICON_FACTORY.getIcon(buttonType));
+		return withButton(button, options);
+	}
+	
+	public MessageBox withOkButton(ButtonOption... options) {
+		return withOkButton(null, options);
+	}
+	
+	public MessageBox withOkButton(Runnable runOnClick, ButtonOption... options) {
+		return withButton(ButtonType.OK, runOnClick, options);
+	}
+	
+	public MessageBox withAbortButton(ButtonOption... options) {
+		return withAbortButton(null, options);
+	}
+	
+	public MessageBox withAbortButton(Runnable runOnClick, ButtonOption... options) {
+		return withButton(ButtonType.ABORT, runOnClick, options);
+	}
+	
+	public MessageBox withCancelButton(ButtonOption... options) {
+		return withCancelButton(null, options);
+	}
+	
+	public MessageBox withCancelButton(Runnable runOnClick, ButtonOption... options) {
+		return withButton(ButtonType.CANCEL, runOnClick, options);
+	}
+	
+	public MessageBox withCloseButton(ButtonOption... options) {
+		return withCloseButton(null, options);
+	}
+	
+	public MessageBox withCloseButton(Runnable runOnClick, ButtonOption... options) {
+		return withButton(ButtonType.CLOSE, runOnClick, options);
+	}
+	
+	public MessageBox withHelpButton(ButtonOption... options) {
+		return withHelpButton(null, options);
+	}
+	
+	public MessageBox withHelpButton(Runnable runOnClick, ButtonOption... options) {
+		ButtonOption[] finalOptions = options;
+		boolean addAutoCloseOption = true;
+		for (ButtonOption option : options) {
+			if (option instanceof ButtonOption.CloseOnClick) {
+				addAutoCloseOption = false;
+				break;
+			}
+		}
+		if (addAutoCloseOption) {
+			finalOptions = Arrays.copyOf(options, options.length + 1);
+			finalOptions[options.length] = ButtonOption.closeOnClick(false);
+		}
+		return withButton(ButtonType.HELP, runOnClick, finalOptions);
+	}
+	
+	public MessageBox withIgnoreButton(ButtonOption... options) {
+		return withIgnoreButton(null, options);
+	}
+	
+	public MessageBox withIgnoreButton(Runnable runOnClick, ButtonOption... options) {
+		return withButton(ButtonType.IGNORE, runOnClick, options);
+	}
+	
+	public MessageBox withNoButton(ButtonOption... options) {
+		return withNoButton(null, options);
+	}
+	
+	public MessageBox withNoButton(Runnable runOnClick, ButtonOption... options) {
+		return withButton(ButtonType.NO, runOnClick, options);
+	}
+	
+	public MessageBox withRetryButton(ButtonOption... options) {
+		return withRetryButton(null, options);
+	}
+	
+	public MessageBox withRetryButton(Runnable runOnClick, ButtonOption... options) {
+		return withButton(ButtonType.RETRY, runOnClick, options);
+	}
+	
+	public MessageBox withSaveButton(ButtonOption... options) {
+		return withSaveButton(null, options);
+	}
+	
+	public MessageBox withSaveButton(Runnable runOnClick, ButtonOption... options) {
+		return withButton(ButtonType.SAVE, runOnClick, options);
+	}
+	
+	public MessageBox withYesButton(ButtonOption... options) {
+		return withYesButton(null, options);
+	}
+	
+	public MessageBox withYesButton(Runnable runOnClick, ButtonOption... options) {
+		return withButton(ButtonType.YES, runOnClick, options);
+	}
+	
+	public MessageBox withCustomButton(ButtonOption... options) {
+		return withCustomButton(null, options);
+	}
+	
+	public MessageBox withCustomButton(Runnable runOnClick, ButtonOption... options) {
+		return withButton(null, runOnClick, options);
 	}
 	
 	/**
@@ -303,30 +621,22 @@ public class MessageBox implements ClickListener {
 	 * @param width The button width.
 	 * @return The {@link MessageBox} instance itself.
 	 */
-	public MessageBox setButtonWidth(String width) {
-		for (Component c : buttons) {
-			if (c instanceof Button) {
-				Button b = (Button) c;
-				b.setWidth(width);
-			}
-		}
+	public MessageBox withWidthForAllButtons(String width) {
+		buttonWidth = width;
 		return this;
 	}
 	
-	/**
-	 * Sets the button width of all buttons for a symmetric appearance.
-	 * @param width The button width.
-	 * @param unit The Unit.
-	 * @return The {@link MessageBox} instance itself.
-	 */
-	public MessageBox setButtonWidth(float width, Unit unit) {
-		for (Component c : buttons) {
-			if (c instanceof Button) {
-				Button b = (Button) c;
-				b.setWidth(width, unit);
-			}
-		}
+	public MessageBox withData(Object data) {
+		setData(data);
 		return this;
+	}
+	
+	public void setData(Object data) {
+		this.data = data;
+	}
+	
+	public Object getData() {
+		return data;
 	}
 	
 	/**
@@ -338,167 +648,11 @@ public class MessageBox implements ClickListener {
 	}
 	
 	/**
-	 * Returns the <code>Embedded</code>, if the dialog uses an icon.
-	 * @return The <code>Embedded</code>, if the dialog uses an icon. 
-	 */
-	public Embedded getEmbedded() {
-		return iconEmbedded;
-	}
-		
-	// methods for showing and closing the dialog =============================
-	
-	/**
-	 * Displays a messagebox with a message formatted as plain text.
-	 * @param icon The icon, that should be displayed.
-	 * @param title The title of the dialog.
-	 * @param plainTextMessage The message as plain text.
-	 * @param buttonIds The displayed buttons.
-	 * @return The {@link MessageBox} instance itself.
-	 */
-	public static MessageBox showPlain(Icon icon, String title, String plainTextMessage, ButtonId... buttonIds) {
-		return showPlain(icon, title, plainTextMessage, null, buttonIds);
-	}
-	
-	/**
-	 * Displays a messagebox with a message formatted as plain text.
-	 * @param iconResource The icon as resource.
-	 * @param title The title of the dialog.
-	 * @param plainTextMessage The message as plain text.
-	 * @param buttonIds The displayed buttons
-	 * @return The {@link MessageBox} instance itself.
-	 */
-	public static MessageBox showPlain(Resource iconResource, String title, String plainTextMessage, ButtonId... buttonIds) {
-		return showPlain(iconResource, title, plainTextMessage, null, buttonIds);
-	}
-	
-	/**
-	 * Displays a messagebox with a message formatted as plain text.
-	 * @param icon The icon, that should be displayed.
-	 * @param title The title of the dialog.
-	 * @param plainTextMessage The message as plain text.
-	 * @param listener The event listener, that is triggered on clicking a button.
-	 * @param buttonIds The displayed buttons.
-	 * @return The {@link MessageBox} instance itself.
-	 */
-	public static MessageBox showPlain(Icon icon, String title, String plainTextMessage, MessageBoxListener listener, ButtonId... buttonIds) {
-		return showHTML(icon, title, encodeToHtml(plainTextMessage), listener, buttonIds);
-	}
-	
-	/**
-	 * Displays a messagebox with a message formatted as plain text.
-	 * @param iconResource The icon as resource.
-	 * @param title The title of the dialog.
-	 * @param plainTextMessage The message as plain text.
-	 * @param listener The event listener, that is triggered on clicking a button.
-	 * @param buttonIds The displayed buttons.
-	 * @return The {@link MessageBox} instance itself.
-	 */
-	public static MessageBox showPlain(Resource iconResource, String title, String plainTextMessage, MessageBoxListener listener, ButtonId... buttonIds) {
-		return showHTML(iconResource, title, encodeToHtml(plainTextMessage), listener, buttonIds);
-	}
-	
-	/**
-	 * Displays a messagebox with a message formatted as HTML.
-	 * @param icon The icon, that should be displayed.
-	 * @param title The title of the dialog.
-	 * @param htmlMessage The message as HTML.
-	 * @param buttonIds The displayed buttons.
-	 * @return The {@link MessageBox} instance itself.
-	 */
-	public static MessageBox showHTML(Icon icon, String title, String htmlMessage, ButtonId... buttonIds) {
-		return showHTML(icon, title, htmlMessage, null, buttonIds);
-	}
-	
-	/**
-	 * Displays a messagebox with a message formatted as HTML.
-	 * @param iconResource The icon as resource.
-	 * @param title The title of the dialog.
-	 * @param htmlMessage The message as HTML.
-	 * @param buttonIds The displayed buttons.
-	 * @return The {@link MessageBox} instance itself.
-	 */
-	public static MessageBox showHTML(Resource iconResource, String title, String htmlMessage, ButtonId... buttonIds) {
-		return showHTML(iconResource, title, htmlMessage, null, buttonIds);
-	}
-
-	/**
-	 * Displays a messagebox with a message formatted as HTML.
-	 * @param icon The icon, that should be displayed.
-	 * @param title The title of the dialog.
-	 * @param htmlMessage The message as HTML.
-	 * @param listener The event listener, that is triggered on clicking a button.
-	 * @param buttonIds The displayed buttons.
-	 * @return The {@link MessageBox} instance itself.
-	 */
-	public static MessageBox showHTML(Icon icon, String title, String htmlMessage, MessageBoxListener listener, ButtonId... buttonIds) {
-		return showCustomized(icon, title, new Label(htmlMessage, ContentMode.HTML), listener, buttonIds);
-	}
-	
-	/**
-	 * Displays a messagebox with a message formatted as HTML.
-	 * @param iconResource The icon as resource.
-	 * @param title The title of the dialog.
-	 * @param htmlMessage The message as HTML.
-	 * @param listener The event listener, that is triggered on clicking a button.
-	 * @param buttonIds The displayed buttons.
-	 * @return The {@link MessageBox} instance itself.
-	 */
-	public static MessageBox showHTML(Resource iconResource, String title, String htmlMessage, MessageBoxListener listener, ButtonId... buttonIds) {
-		return showCustomized(iconResource, title, new Label(htmlMessage, ContentMode.HTML), listener, buttonIds);
-	}
-	
-	/**
-	 * Displays a messagebox with a custom component for message.
-	 * @param icon The icon, that should be displayed.
-	 * @param title The title of the dialog.
-	 * @param messageComponent The custom component for the message.
-	 * @param buttonIds The displayed buttons.
-	 * @return The {@link MessageBox} instance itself.
-	 */
-	public static MessageBox showCustomized(Icon icon, String title, Component messageComponent, ButtonId... buttonIds) {
-		return showCustomized(icon, title, messageComponent, null, buttonIds);
-	}
-	
-	/**
-	 * Displays a messagebox with a custom component for message.
-	 * @param icon The icon, that should be displayed.
-	 * @param title The title of the dialog.
-	 * @param messageComponent The custom component for the message.
-	 * @param listener The event listener, that is triggered on clicking a button.
-	 * @param buttonIds The displayed buttons.
-	 * @return The {@link MessageBox} instance itself.
-	 */
-	public static MessageBox showCustomized(Icon icon, String title, Component messageComponent, MessageBoxListener listener, ButtonId... buttonIds) {
-		MessageBox result = showCustomized(RESOURCE_FACTORY.getIcon(icon), title, messageComponent, listener, buttonIds);
-		// Following avoids re-rendering of the window
-		if (result.getEmbedded() != null) {
-			result.getEmbedded().setWidth(DEFAULT_ICON_WIDTH); 
-			result.getEmbedded().setHeight(DEFAULT_ICON_HEIGHT);
-		}
-		return result;
-	}
-	
-	/**
-	 * Displays a messagebox with a custom component for message.
-	 * @param iconResource The icon as resource.
-	 * @param title The title of the dialog.
-	 * @param messageComponent The custom component for the message.
-	 * @param listener The event listener, that is triggered on clicking a button.
-	 * @param buttonIds The displayed buttons.
-	 * @return The {@link MessageBox} instance itself.
-	 */
-	public static MessageBox showCustomized(Resource iconResource, String title, Component messageComponent, MessageBoxListener listener, ButtonId... buttonIds) {
-		MessageBox result = new MessageBox(iconResource, title, messageComponent, listener, buttonIds);
-		result.open();
-		return result;
-	}
-	
-	/**
 	 * Translates plain text to HTML formatted text with corresponding escape sequences.
 	 * @param plainText		The plain text to translates.
 	 * @return The HTML formatted text.
 	 */
-	protected static String encodeToHtml(String plainText) {
+	protected String encodeToHtml(String plainText) {
 	    StringBuilder builder = new StringBuilder();
 	    boolean previousWasASpace = false;
 	    for( char c : plainText.toCharArray() ) {
@@ -529,95 +683,46 @@ public class MessageBox implements ClickListener {
 	    }
 	    return builder.toString();
 	}
+		
+	// methods for showing and closing the dialog =============================
 	
 	/**
-	 * Creates and opens the window for the messagebox. 
+	 * Creates and opens the window for the MessageBox.
+	 * @return The message dialog instance  
 	 */
-	protected void open() {
-		// Create window
-		window = new Window(title);
-		window.setClosable(false);
-		window.setModal(DEFAULT_MODAL);
-		window.setResizable(false);
-		window.setSizeUndefined();
-		
-		// Create the top-level layout of the window
-		mainLayout = new VerticalLayout();
-		mainLayout.setImmediate(false);
-		mainLayout.setSizeUndefined();
-		mainLayout.setMargin(true);
-		mainLayout.setSpacing(true);
-		window.setContent(mainLayout);
-		
-		// Layout for the dialog body (icon & message)
-		contentLayout = new HorizontalLayout();
-		mainLayout.addComponent(contentLayout);
-		mainLayout.setExpandRatio(contentLayout, 1.0f);
-		contentLayout.setSizeFull();
-		contentLayout.setMargin(false);
-		contentLayout.setSpacing(true);
-		
-		// Add icon component
-		if (iconEmbedded != null) {
-			contentLayout.addComponent(iconEmbedded);
-			contentLayout.setComponentAlignment(iconEmbedded, Alignment.MIDDLE_CENTER);
+	public static MessageBox create() {
+		return new MessageBox();
+	}
+	
+	public void open() {
+		// Ensure, that the dialog has at least one button
+		if (!buttonAdded) {
+			withCloseButton();
 		}
 		
-		// Add message component
-		messageComponent.setSizeFull();		
-		contentLayout.addComponent(messageComponent);
-		contentLayout.setExpandRatio(messageComponent, 1.0f);		
-		contentLayout.setComponentAlignment(messageComponent, Alignment.MIDDLE_CENTER);
-		
-		// Create layout for the buttons 
-		buttonLayout = new HorizontalLayout();
-		buttonLayout.setImmediate(false);
-		buttonLayout.setSizeUndefined();
-		buttonLayout.setMargin(false);
-		buttonLayout.setSpacing(true);
-		mainLayout.addComponent(buttonLayout);
-		mainLayout.setComponentAlignment(buttonLayout, Alignment.MIDDLE_RIGHT);
-		
-		// Add buttons
-		for (Component c : buttons) {
-			buttonLayout.addComponent(c);
-			if (c instanceof Button) {
+		// Apply some layouting options to the buttons
+		for (int i = 0; i < buttonLayout.getComponentCount(); i++) {
+			Component c = buttonLayout.getComponent(i);
+			if (buttonWidth != null && c instanceof Button) {
 				Button b = (Button) c;
-				b.addClickListener(this);
+				b.setWidth(buttonWidth);
 			}
 			buttonLayout.setComponentAlignment(c, Alignment.MIDDLE_CENTER);
-		}		
+		}
 		
 		// Add window to the UI
-		if (TRANSITION_LISTENER == null || (TRANSITION_LISTENER != null && TRANSITION_LISTENER.show(this))) {
-			UI.getCurrent().addWindow(window);
-		}		
+		if (DIALOG_DEFAULT_TRANSITION_LISTENER == null || (DIALOG_DEFAULT_TRANSITION_LISTENER != null && DIALOG_DEFAULT_TRANSITION_LISTENER.show(this))) {
+			UI.getCurrent().addWindow(getWindow());
+		}
 	}
 	
 	/**
 	 * Closes the window if open.
 	 */
 	public void close() {
-		if (TRANSITION_LISTENER == null || (TRANSITION_LISTENER != null && TRANSITION_LISTENER.close(this))) {
+		if (DIALOG_DEFAULT_TRANSITION_LISTENER == null || (DIALOG_DEFAULT_TRANSITION_LISTENER != null && DIALOG_DEFAULT_TRANSITION_LISTENER.close(this))) {
 			UI.getCurrent().removeWindow(window);
 		}
-	}
-
-	// ClickListener implementation ===========================================
-	
-	/**
-	 * See <a href="http://vaadin.com/api/com/vaadin/ui/Button.ClickListener.html#buttonClick(com.vaadin.ui.Button.ClickEvent)">com.vaadin.ui.Button.ClickListener.buttonClick(com.vaadin.ui.Button.ClickEvent)</a>
-	 */
-	@Override
-	public void buttonClick(ClickEvent event) {
-		ButtonId buttonId = (ButtonId) event.getButton().getData();
-		if (listener != null) {
-			listener.buttonClicked(buttonId);
-		}
-		if (autoClose && !ButtonId.HELP.equals(buttonId)) {
-			close();
-		}
-		
 	}
 	
 }

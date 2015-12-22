@@ -20,6 +20,28 @@
 				<target>1.6</target>
 			</configuration>
 		</plugin>
+		
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
+				<configuration>
+					<archive>
+						<index>true</index>
+						<manifest>
+							<addClasspath>false</addClasspath>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+						<manifestEntries>
+							<!-- Package format version - do not change -->
+							<Vaadin-Package-Version>1</Vaadin-Package-Version>
+							<Vaadin-Widgetsets>de.steinwedel.messagebox.WidgetSet</Vaadin-Widgetsets>
+							<Implementation-Title>MessageBox</Implementation-Title>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+			
    	</plugins>
    </build>
   
@@ -68,6 +90,6 @@
   <parent>
   	<groupId>de.steinwedel.vaadin.addon</groupId>
   	<artifactId>messagebox-project</artifactId>
-  	<version>2.1.1</version>
+  	<version>3.0.0</version>
   </parent>
 </project>
