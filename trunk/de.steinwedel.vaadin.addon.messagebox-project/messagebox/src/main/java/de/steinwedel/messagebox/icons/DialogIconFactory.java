@@ -5,14 +5,9 @@ import java.io.Serializable;
 import com.vaadin.server.ClassResource;
 import com.vaadin.ui.Embedded;
 
-import de.steinwedel.messagebox.MessageBox;
-
 /**
- * TODO
- * Manages the loading of default resources like icons and button captions. You can override the method <code>getIcon</code> to use customized icons.
- * The overridden <code>DefaultResources</code> must be set to the static member {@link MessageBox#RESOURCE_FACTORY}.
- * You can change the default captions of the buttons by using a different {@link java.util.ResourceBundle}. 
- * You can assign the new {@link java.util.ResourceBundle} with the method {@link #setResourceBundle(java.lang.String)} or {@link #setResourceBundle(java.lang.String, java.util.Locale)} . 
+ * This class implements the default behavior for loading icons for the dialog. You can
+ * override this class to apply an own icon set. 
  * 
  * @author Dieter Steinwedel
  */
@@ -22,43 +17,55 @@ public abstract class DialogIconFactory implements Serializable {
 	
 	protected Class<?> associatedClass;
 	protected String relativePath;
+	protected String extention;
 	
 	/**
-	 * TODO
-	 * @param associatedClass
-	 * @param relativePath
+	 * The constructor
+	 * 
+	 * @param associatedClass The associated class for loading the resources
+	 * @param relativePath The relative path to the resources starting from the associated class
+	 * @param extention The file extention of the images f.e. "png" or "svg"
 	 */
-	public DialogIconFactory(Class<?> associatedClass, String relativePath) {
+	public DialogIconFactory(Class<?> associatedClass, String relativePath, String extention) {
 		this.associatedClass = associatedClass;
 		this.relativePath = relativePath;
+		this.extention = extention;
 	}
 
 	/**
-	 * TODO
+	 * Returns the question icon.
+	 * 
+	 * @return question icon
 	 */
 	public Embedded getQuestionIcon() {
-		return new Embedded(null, new ClassResource(associatedClass, relativePath + "/question.png"));
+		return new Embedded(null, new ClassResource(associatedClass, relativePath + "/question." + extention));
 	}
 	
 	/**
-	 * TODO
+	 * Returns the info icon.
+	 * 
+	 * @return info icon
 	 */
 	public Embedded getInfoIcon() {
-		return new Embedded(null, new ClassResource(associatedClass, relativePath + "/info.png"));
+		return new Embedded(null, new ClassResource(associatedClass, relativePath + "/info." + extention));
 	}
 	
 	/**
-	 * TODO
+	 * Returns the warning icon.
+	 * 
+	 * @return warning icon
 	 */
 	public Embedded getWarningIcon() {
-		return new Embedded(null, new ClassResource(associatedClass, relativePath + "/warn.png"));
+		return new Embedded(null, new ClassResource(associatedClass, relativePath + "/warning." + extention));
 	}
 	
 	/**
-	 * TODO
+	 * Returns teh error icon.
+	 * 
+	 * @return error icon
 	 */
 	public Embedded getErrorIcon() {
-		return new Embedded(null, new ClassResource(associatedClass, relativePath + "/error.png"));
+		return new Embedded(null, new ClassResource(associatedClass, relativePath + "/error." + extention));
 	}
 			
 }

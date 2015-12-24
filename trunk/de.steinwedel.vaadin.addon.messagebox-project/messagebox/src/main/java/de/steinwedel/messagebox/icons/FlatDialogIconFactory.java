@@ -5,15 +5,15 @@ package de.steinwedel.messagebox.icons;
  * 
  * @author Dieter Steinwedel
  */
-public class ClassicDialogIconFactory extends DialogIconFactory {
+public class FlatDialogIconFactory extends DialogIconFactory {
 	
 	private static final long serialVersionUID = 1L;
 	
 	/**
 	 * Default constructor.
 	 */
-	public ClassicDialogIconFactory() {
-		super(ClassicDialogIconFactory.class, "classic/dialog", "png");
+	public FlatDialogIconFactory() {
+		super(FlatDialogIconFactory.class, "flat/dialog", "svg");
 	}
 		
 }

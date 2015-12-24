@@ -11,6 +11,9 @@ import org.apache.commons.io.IOUtils;
 import org.vaadin.aceeditor.AceEditor;
 import org.vaadin.aceeditor.AceMode;
 import org.vaadin.aceeditor.AceTheme;
+import org.vaadin.jouni.animator.Animator;
+import org.vaadin.jouni.dom.Dom;
+import org.vaadin.jouni.dom.client.Css;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
@@ -19,9 +22,9 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
@@ -32,6 +35,9 @@ import com.vaadin.ui.themes.BaseTheme;
 
 import de.steinwedel.messagebox.ButtonOption;
 import de.steinwedel.messagebox.MessageBox;
+import de.steinwedel.messagebox.TransitionListener;
+import de.steinwedel.messagebox.icons.ClassicDialogIconFactory;
+import de.steinwedel.messagebox.icons.FlatDialogIconFactory;
 
 @Theme("demo")
 @Title("MessageBox Add-on Demo")
@@ -115,21 +121,37 @@ public class DemoUI extends UI {
         implementationEditor.setTheme(AceTheme.eclipse);
         implementationEditor.setValue(    "\nWELCOME"
         								+ "\n======="
-        								+ "\nWelcome to the demo and idea site for the MessageBox widget."
+        								+ "\nWelcome to the demo and idea site for the MessageBox addon."
         								+ "\nYou will find here a lot examples, how to use the MessageBox."
         								+ "\nI hope, the examples inspire you."
         								+ "\n"
         								+ "\nIf you like this demo, vote for it on the vaadin addon page "
         								+ "\nto honor my work. Thanks!"
         								+ "\n"
+        								+ "\nIn version 3.0.0 a new syntax is introduced. The idiom is called"
+        								+ "\n'method chaining'. It is intuitively to write and the"
+        								+ "\nresulting code is very expressive and narrative."
         								+ "\n"
-        								+ "\nHOW TO USE IT"
-        								+ "\n============="
+        								+ "\nI hope, you also like the new syntax."
+        								+ "\n"
+        								+ "\n"
+        								+ "\nHOW TO USE THE DEMO"
+        								+ "\n==================="
         								+ "\nSimply press on the left side in the column 'Demo' a button "
         								+ "\nto open an demo dialog."
         								+ "\n"
         								+ "\nThis text will be replaced with the corresponding implementation,"
         								+ "\nwhen you press a button."
+        								+ "\n"
+        								+ "\n"
+        								+ "\nHOW YOU CAN CONTRIBUTE"
+        								+ "\n======================"
+        								+ "\nIf you want to contribute, please use the forum of sourceforge.net,"
+        								+ "\nwhere the project is hosted:"
+        								+ "\n"
+        								+ "\nhttp://sourceforge.net/p/messagebox/discussion/general/"
+        								+ "\n"
+        								+ "\nPlease remember, I don't publish my email."
         								+ "\n");
         implementationEditor.setReadOnly(true);
         
@@ -142,15 +164,17 @@ public class DemoUI extends UI {
         layout.addComponent(new Label("<b>Demo</b>", ContentMode.HTML));
         layout.addComponent(new Label("<b>Description</b>", ContentMode.HTML));
 
-        addExample("Info Dialog", "Shows a messagebox with an info icon.", new ClickListener() {
+        addExample("Info Dialog", "Shows a MessageBox with an info icon.", new ClickListener() {
 
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// This is the simplest way to define a dialog.
+				// If you don't add a button, a close button is 
+				// automatically added to the dialog.
 				
-				MessageBox.create().asInfo()
+				MessageBox.createInfo()
 					.withCaption("Info Dialog")
 					.withMessage("Hello World!")
 					.open();
@@ -165,7 +189,7 @@ public class DemoUI extends UI {
 			public void buttonClick(ClickEvent event) {
 				// You need more than one ore two buttons? No problem ...
 				
-				MessageBox.create().asInfo()
+				MessageBox.createInfo()
 					.withCaption("Many buttons")
 					.withMessage("You can define a lot of buttons. But notice, user don't like overloaded dialogs.")
 					.withYesButton()
@@ -182,11 +206,15 @@ public class DemoUI extends UI {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// Till now, the dialogs are very stupid. Here is an example, 
-				// how to handle the button click event. 
+				// Till now, the dialogs were very stupid. Here is an example, 
+				// how to handle the button click event. The example uses
+				// lambda expressions from Java 8. But you can even use the
+				// classical inner class idiom ...
+				//
+				// The event handler simply instances of java.lang.Runnable.
 				
 				
-				MessageBox.create().asQuestion()
+				MessageBox.createQuestion()
 					.withCaption("Dialog with MessageBoxListener")
 					.withMessage("Do you really want to continue?")
 					.withYesButton(()-> { Notification.show("Yes pressed."); })
@@ -203,7 +231,7 @@ public class DemoUI extends UI {
 			public void buttonClick(ClickEvent event) {
 				// You can do some eye-candy stuff with a spacer
 				
-				MessageBox.create().asInfo()
+				MessageBox.createInfo()
 						.withCaption("Buttons with spacer")
 						.withMessage("You can use the spacer to group buttons!")
 						.withYesButton()
@@ -214,7 +242,7 @@ public class DemoUI extends UI {
 			}
 			
 		});
-        addExample("Question Dialog", "Shows a messagebox with a question icon.", new ClickListener() {
+        addExample("Question Dialog", "Shows a MessageBox with a question icon.", new ClickListener() {
 
 			private static final long serialVersionUID = 1L;
 
@@ -222,7 +250,7 @@ public class DemoUI extends UI {
 			public void buttonClick(ClickEvent event) {
 				// An different dialog icon ...
 				
-				MessageBox.create().asQuestion()
+				MessageBox.createQuestion()
 					.withCaption("Question Dialog")
 					.withMessage("Do you really want to continue?")
 					.withYesButton()
@@ -231,7 +259,7 @@ public class DemoUI extends UI {
 			}
 			
 		});
-        addExample("Warn Dialog", "Shows a messagebox with a warn icon.", new ClickListener() {
+        addExample("Warn Dialog", "Shows a MessageBox with a warn icon.", new ClickListener() {
 
 			private static final long serialVersionUID = 1L;
 
@@ -239,14 +267,14 @@ public class DemoUI extends UI {
 			public void buttonClick(ClickEvent event) {
 				// An different dialog icon ...
 				
-				MessageBox.create().asWarning()
+				MessageBox.createWarning()
 					.withCaption("Warning Dialog")
 					.withMessage("Some important warning!")
 					.open();
 			}
 			
 		});
-        addExample("Error Dialog", "Shows a messagebox with an error icon.", new ClickListener() {
+        addExample("Error Dialog", "Shows a MessageBox with an error icon.", new ClickListener() {
 
 			private static final long serialVersionUID = 1L;
 
@@ -254,7 +282,7 @@ public class DemoUI extends UI {
 			public void buttonClick(ClickEvent event) {
 				// An different dialog icon ...
 				
-				MessageBox.create().asError()
+				MessageBox.createError()
 					.withCaption("Error Dialog")
 					.withMessage("The batch job has failed! Do you want to continue?")
 					.withRetryButton()
@@ -264,7 +292,7 @@ public class DemoUI extends UI {
 			}
 			
 		});
-        addExample("No Icon Dialog", "Shows a messagebox without an icon.", new ClickListener() {
+        addExample("No Icon Dialog", "Shows a MessageBox without an icon.", new ClickListener() {
 
 			private static final long serialVersionUID = 1L;
 
@@ -318,9 +346,9 @@ public class DemoUI extends UI {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// Don't like the default placement. You can change it ...
+				// You don't like the default placement? You can change it ...
 				
-				MessageBox.create().asInfo()
+				MessageBox.createInfo()
 					.withCaption("Buttons centered")
 					.withMessage("Now, the Buttons are aligned to the middle.")
 					.withOkButton()
@@ -336,9 +364,9 @@ public class DemoUI extends UI {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// Don't like the default placement. You can change it ...
+				// You don't like the default placement? You can change it ...
 				
-				MessageBox.create().asInfo()
+				MessageBox.createInfo()
 					.withCaption("Buttons left")
 					.withMessage("Now, the Buttons are aligned to the left.")
 					.withOkButton()
@@ -354,9 +382,9 @@ public class DemoUI extends UI {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// Sometimes you need custom button captions. It's so easy.
+				// Sometimes you may need custom button captions. It's so easy.
 				
-				MessageBox.create().asInfo()
+				MessageBox.createInfo()
 					.withCaption("Custom button captions")
 					.withMessage("Button captions replaced!")
 					.withYesButton(ButtonOption.caption("Yea"))
@@ -373,7 +401,7 @@ public class DemoUI extends UI {
 			public void buttonClick(ClickEvent event) {
 				// You can focus a button, if required ...
 				
-				MessageBox.create().asInfo()
+				MessageBox.createInfo()
 					.withCaption("Button focused")
 					.withMessage("The 'Save' button is focused!")
 					.withSaveButton(ButtonOption.focus())
@@ -390,7 +418,7 @@ public class DemoUI extends UI {
 			public void buttonClick(ClickEvent event) {
 				// Plain text is boring you. What about HTML? Better?
 				
-				MessageBox.create().asInfo()
+				MessageBox.createInfo()
 					.withCaption("Message with HTML")
 					.withHtmlMessage("Some HTML: <b>bold</b> <i>italic</i><br/>A new line etc.")
 					.open();
@@ -405,7 +433,7 @@ public class DemoUI extends UI {
 			public void buttonClick(ClickEvent event) {
 				// Want to set a unique button width?
 				
-				MessageBox.create().asInfo()
+				MessageBox.createInfo()
 					.withCaption("Custom button width")
 					.withMessage("Button with custom width!")
 					.withYesButton()
@@ -447,7 +475,7 @@ public class DemoUI extends UI {
 				}
 				p.setContent(new Label(sb.toString()));
 				
-				// Create the messagebox and add the panel
+				// Create the MessageBox and add the panel
 				MessageBox.create()
 					.withCaption("Custom component")
 					.withMessage(p)
@@ -466,7 +494,7 @@ public class DemoUI extends UI {
 			public void buttonClick(ClickEvent event) {
 				// Don't like the centric placement? You can change it ...
 				
-				MessageBox.create().asInfo()
+				MessageBox.createInfo()
 					.withCaption("Custom placement")
 					.withMessage("Placed at x = 50, y = 50.")
 					.withDialogPosition(50, 50)
@@ -480,10 +508,12 @@ public class DemoUI extends UI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// I18N is even supported. It uses the default mechanism from Java.
-				// You can support me with further languages. But please, no
-				// google translate stuff!
+				// Currently, more than 40 languages are supported!
+				//
+				// With MessageBox.setDialogSessionLanguage(Locale.XYZ) you can
+				// can apply a language only for the current session.
 				
-				MessageBox.create().asQuestion()
+				MessageBox.createQuestion()
 					.withCaption("Switch I18N")
 					.withHtmlMessage("Switch the internationalization. The demo shows German and English language supported.<br>Call <i><code>MessageBox.RESOURCES_FACTORY.setResourceBundle(<basename>);</code></i> for using your own resource bundle.")
 					.withCustomButton(() -> { 
@@ -506,18 +536,17 @@ public class DemoUI extends UI {
 			public void buttonClick(ClickEvent event) {
 				// The help button does not close the message dialog like other
 				// buttons. Typically, you open a help window keeping the 
-				// current messagebox open. In this example the help dialog is 
-				// even a messagebox. A special feature of the help dialog is
-				// that it is non-modal. You can make a messagebox non-modal
+				// current MessageBox open. In this example the help dialog is 
+				// even a MessageBox. A special feature of the help dialog is
+				// that it is non-modal. You can make a MessageBox non-modal
 				// with calling setModal(false).
 				
-				MessageBox mb = MessageBox.create();
-				mb.asInfo()
-					.withCaption("Help Button")
+				MessageBox mgBx = MessageBox.createInfo();
+				mgBx.withCaption("Help Button")
 					.withMessage("The dialog does not close the message dialog. Other buttons do!")
 					.withCloseButton(() -> {
-						if (mb.getData() != null) {
-							MessageBox helpMB = (MessageBox) mb.getData();
+						if (mgBx.getData() != null) {
+							MessageBox helpMB = (MessageBox) mgBx.getData();
 							helpMB.close();
 						}
 					})
@@ -525,11 +554,11 @@ public class DemoUI extends UI {
 						MessageBox helpMB = MessageBox.create();
 						helpMB.asModal(false)
 							.withCaption("Help")
-							.withMessage("Here, you can explain something.\nThis dialog does not need to be a messagebox,\nbut you can use it, if you like.")
-							.withDialogPosition(mb.getWindow().getPositionX() + 500, mb.getWindow().getPositionY())
-							.withCloseButton(() -> { mb.setData(null); })
+							.withMessage("Here, you can explain something.\nThis dialog does not need to be a MessageBox,\nbut you can use it, if you like.")
+							.withDialogPosition(mgBx.getWindow().getPositionX() + 500, mgBx.getWindow().getPositionY())
+							.withCloseButton(() -> { mgBx.setData(null); })
 							.open();
-						mb.setData(helpMB);
+						mgBx.setData(helpMB);
 					})
 					.open();
 			}
@@ -547,7 +576,7 @@ public class DemoUI extends UI {
 				
 				count = 0;
 				
-				mb = MessageBox.create().asInfo()
+				mb = MessageBox.createInfo()
 						.withCaption("Disable auto-close")
 						.withMessage("You must click the button twice to close the dialog.")
 						.withCloseButton(() -> {								
@@ -555,6 +584,71 @@ public class DemoUI extends UI {
 							Notification.show("Button clicks: " + count, "", Notification.Type.WARNING_MESSAGE);
 						}, ButtonOption.closeOnClick(false));
 				mb.open();
+			}
+		});
+        addExample("En-/disable default icons", "You can enable and disable the default icons of the buttons.", new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// If you want to implement in the listener yourself
+				// when the dialog is closed, call setAutoClose(false).
+				MessageBox.createQuestion()
+						.withCaption("Default icons")
+						.withMessage("Should the button icons be enabled?")
+						.withYesButton(() -> { MessageBox.setButtonDefaultIconsVisible(true); })
+						.withNoButton(() -> { MessageBox.setButtonDefaultIconsVisible(false); })
+						.open();
+			}
+		});
+        addExample("Transistion effects", "You can add transition effects to the MessageBox.", new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// With the TransitionListener you can intercept the
+				// opening and closing of the dialog.
+				
+				TransitionListener tl = new TransitionListener () {
+					
+					public boolean show(MessageBox messageBox) {
+						new Dom(messageBox.getWindow()).getStyle().opacity(0f);
+						Animator.animate(messageBox.getWindow(), new Css().opacity(1f)).duration(300);
+						return true;
+					}
+					
+					public boolean close(MessageBox messageBox) {
+						// Unfortunally, the addon "Animator" does not offer a public event listener for finishing an animation.
+						// Therefore, we cannot animate the close :-(
+						return true;
+					}
+				};
+				
+				MessageBox.createQuestion()
+						.withCaption("Dialog animation")
+						.withMessage("Should be the dialog animation enabled?")
+						.withYesButton(() -> { MessageBox.setDialogDefaultTransitionListener(tl); })
+						.withNoButton(() -> { MessageBox.setDialogDefaultTransitionListener(null); })
+						.open();
+			}
+		});
+        addExample("Switch icon set", "You can switch the dialog icon set.", new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// You can simply switch the dialog set.
+				// You can switch to an own icon sets in the same way. 
+				
+				MessageBox.createQuestion()
+						.withCaption("Default icons")
+						.withMessage("Should the flat icons be enabled?")
+						.withYesButton(() -> { MessageBox.setDialogDefaultIconFactory(new FlatDialogIconFactory()); })
+						.withNoButton(() -> { MessageBox.setDialogDefaultIconFactory(new ClassicDialogIconFactory()); })
+						.open();
 			}
 		});
 

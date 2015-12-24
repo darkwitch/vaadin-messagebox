@@ -5,13 +5,32 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
+/**
+ * With the ButtonOption can the buttons configured of a {@link MessageBox}.
+ * 
+ * @author Dieter Steinwedel
+ */
 public abstract class ButtonOption {
 
+	/**
+	 * Is used internally.
+	 * 
+	 * @param messageBox
+	 * @param button
+	 */
 	public abstract void apply(MessageBox messageBox, Button button);
 	
+	/**
+	 * Focuses the corresponding Button.
+	 * 
+	 * @return The ButtonOption
+	 */
 	public static ButtonOption focus() {
 		return new ButtonOption() {
 			
+			/**
+			 * See {@link ButtonOption#apply(MessageBox, Button)}
+			 */
 			@Override
 			public void apply(MessageBox messageBox, Button button) {
 				button.focus();
@@ -20,9 +39,18 @@ public abstract class ButtonOption {
 		};
 	}
 	
+	/**
+	 * Applies a style to the corresponding button.
+	 * 
+	 * @param styleName
+	 * @return The ButtonOption
+	 */
 	public static ButtonOption style(final String styleName) {
 		return new ButtonOption() {
 			
+			/**
+			 * See {@link ButtonOption#apply(MessageBox, Button)}
+			 */
 			@Override
 			public void apply(MessageBox messageBox, Button button) {
 				button.setStyleName(styleName);
@@ -31,9 +59,18 @@ public abstract class ButtonOption {
 		};
 	}
 	
+	/**
+	 * Changes the width of the corresponding button.
+	 * 
+	 * @param width
+	 * @return The ButtonOption
+	 */
 	public static ButtonOption width(final String width) {
 		return new ButtonOption() {
 			
+			/**
+			 * See {@link ButtonOption#apply(MessageBox, Button)}
+			 */
 			@Override
 			public void apply(MessageBox messageBox, Button button) {
 				button.setWidth(width);
@@ -42,9 +79,18 @@ public abstract class ButtonOption {
 		};
 	}
 	
+	/**
+	 * Changes the caption of the corresponding button.
+	 * 
+	 * @param caption
+	 * @return The ButtonOption
+	 */
 	public static ButtonOption caption(final String caption) {
 		return new ButtonOption() {
 			
+			/**
+			 * See {@link ButtonOption#apply(MessageBox, Button)}
+			 */
 			@Override
 			public void apply(MessageBox messageBox, Button button) {
 				button.setCaption(caption);
@@ -52,6 +98,7 @@ public abstract class ButtonOption {
 			
 		};
 	}
+	
 	
 	public static class CloseOnClick extends ButtonOption {
 		
@@ -61,6 +108,9 @@ public abstract class ButtonOption {
 			this.closeOnClick = closeOnClick;
 		}
 		
+		/**
+		 * See {@link ButtonOption#apply(MessageBox, Button)}
+		 */
 		@Override
 		public void apply(final MessageBox messageBox, Button button) {
 			if (closeOnClick) {
@@ -80,13 +130,28 @@ public abstract class ButtonOption {
 		
 	}
 	
+	/**
+	 * Changes the behavior of the corresponding button. If true, a click on the button closes the MessageBox.
+	 * 
+	 * @param width
+	 * @return The ButtonOption
+	 */
 	public static ButtonOption closeOnClick(final boolean closeOnClick) {
 		return new CloseOnClick(closeOnClick);
 	}
 
+	/**
+	 * Sets the icon of the corresponding button.
+	 * 
+	 * @param width
+	 * @return The ButtonOption
+	 */
 	public static ButtonOption icon(final Resource icon) {
 		return new ButtonOption() {
 			
+			/**
+			 * See {@link ButtonOption#apply(MessageBox, Button)}
+			 */
 			@Override
 			public void apply(MessageBox messageBox, Button button) {
 				button.setIcon(icon);
