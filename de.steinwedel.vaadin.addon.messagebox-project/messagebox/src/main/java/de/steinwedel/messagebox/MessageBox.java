@@ -4,9 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Locale;
 
-import com.vaadin.client.ui.Icon;
-import com.vaadin.server.VaadinService;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.server.VaadinService;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -27,33 +26,43 @@ import de.steinwedel.messagebox.icons.ClassicDialogIconFactory;
 import de.steinwedel.messagebox.icons.DialogIconFactory;
 
 /**
- * <p><b>DESCRIPTION AND FEATURES</b></p>
- * <p>MessageBox is a flexible utility class for generating different styles of messageboxes. 
- * The messagebox is typically a modal dialog, with an icon on the left side, 
+ * <p><b>DESCRIPTION</b></p>
+ * <p>MessageBox is a flexible utility class for generating different styles of MessageBoxes. 
+ * The MessageBox is typically a modal dialog, with an icon on the left side, 
  * a message on the right of the icon and some buttons on the bottom of the dialog.
  * </p> 
- * <p>E.g. you can define/customize</p>
+ * <p>E.g. you can define or customize</p>
  * <ul>
  * <li>the window caption</li>
- * <li>different types of icons (see {@link Icon})</li>
+ * <li>the dialog icons</li>
  * <li>a message as plain string or HTML or with a custom component</li>
  * <li>which and how many buttons are placed on the dialog</li>
  * <li>the icon and appearance of the buttons</li>
  * <li>the buttons alignment (left, centered, right)</li>
- * <li>one simple event listener (see {@link MessageBoxListener}) for all buttons</li>
+ * <li>event listeners for all buttons</li>
+ * <li>button captions</li>
+ * <li>the language of the button captions session and application scoped</li> 
  * </ul>
- * <p>Now, real I18n is supported via {@code java.util.ResourceBundle}. Even a new feature is, that 
- * the dialog size is determined automatically from the message itself - but it can be overridden explicitly, if required.
- * You need less code to show a messagebox in compare to version 1.x of this add-on. Even the naming, packaging and javadoc has been improved.  
+ * <p><b>FEATURES</b></p>
+ * <ul>
+ * <li>I18n is supported for more than 40 languages out of-the-box</li>
+ * <li>The idiom "method chaining" is implemented to give you maximum of flexibility</li>
+ * <li>The dialog size is determined automatically from the message itself - but it can be overridden explicitly, if required</li>
+ * <li>Many examples and JavaDoc are available</li>
+ * <li>Source code with examples can be find at Sourceforge: http://sourceforge.net/p/messagebox/code/HEAD/tree/</li>
+ * </ul>
  * </p>
  * <p><b>USAGE</b></p>
  * <p>
- * <code>MessageBox.showPlain(Icon.INFO, "Example 1", "Hello World!", ButtonId.OK);</code>
+ * <code>MessageBox.createInfo().withCaption("Example 1").withMessage("Hello World!").withOkButton().open();</code>
  * This example shows a simple message dialog, with "Example 1" as dialog 
  * caption, an info icon, "Hello World!" as message and an "Ok" labeled button. The 
- * dialog is displayed modally. To receive an event of the pressed button, add an event listener (see 
- * {@link MessageBoxListener}). I have added a demo class (Demo.java) with many examples, to show most of the possible use cases.
- * There are many more ways to display and customize a messagebox.</p>
+ * dialog is displayed modally. To receive an event of the pressed button, add an Instance of <code>java.lang.Runnable</code>
+ * to the parameters of the method <code>withOkButton()</code> f. e. <code>(() -> { System.out.println("Ok pressed")});</code>. 
+ * The Runnable is executed after the button was pressed.
+ * <br>
+ * I have added a demo class (Demo.java) with many examples, to show most of the possible use cases.
+ * Of course, there are many more ways to display and customize the MessageBox.</p>
  * <br>
  * <p><b>LICENSE</b></p>
  * <p>The licenses are suitable for commercial usage.</p>
@@ -78,65 +87,69 @@ public class MessageBox implements Serializable {
 	// default configurations =================================================
 
 	/**
-	 * You can implement transitions inside the {@link TransitionListener}. 
+	 * Keeps the reference of the {@link TransistionListener}
 	 */
-	private static TransitionListener DIALOG_DEFAULT_TRANSITION_LISTENER;
-	
-	private static Locale DIALOG_DEFAULT_LOCALE = Locale.ENGLISH;
+	protected static TransitionListener DIALOG_DEFAULT_TRANSITION_LISTENER;
 	
 	/**
-	 * You can override the class {@link DialogIconFactory} to customize the default dialog icons. 
+	 * Keeps the current configured language, that is applied application scoped
 	 */
-	private static DialogIconFactory DIALOG_DEFAULT_ICON_FACTORY = new ClassicDialogIconFactory();
+	protected static Locale DIALOG_DEFAULT_LOCALE = Locale.ENGLISH;
 	
 	/**
-	 * Defines the default width of the dialog icon. It is recommended to set it unequal '-1px', 
-	 * because otherwise there is re-rendering of dialog recognizable when the dialog is displayed.
-	 * The cause is, that the icon is lazy loaded. 
+	 * Keeps the reference of the {@link DialogIconFactory}
 	 */
-	private static String DIALOG_DEFAULT_ICON_WIDTH = "48px";
+	protected static DialogIconFactory DIALOG_DEFAULT_ICON_FACTORY = new ClassicDialogIconFactory();
 	
 	/**
-	 * Defines the default height of the dialog icon. It is recommended to set it unequal '-1px', 
-	 * because otherwise there is re-rendering of dialog recognizable when the dialog is displayed.
-	 * The cause is, that the icon is lazy loaded. 
+	 * Keeps the icon default width
 	 */
-	private static String DIALOG_DEFAULT_ICON_HEIGHT = "48px";
+	protected static String DIALOG_DEFAULT_ICON_WIDTH = "48px";
+	
+	/**
+	 * Keeps the icon default height
+	 */
+	protected static String DIALOG_DEFAULT_ICON_HEIGHT = "48px";
 
 	/**
-	 * Configures the default button alignment.
-	 * The default value is <code>Alignment.MIDDLE_RIGHT</code>.
+	 * Keeps the button default alignment
 	 */
-	private static Alignment BUTTON_DEFAULT_ALIGNMENT = Alignment.MIDDLE_RIGHT;
-	
-	private static ButtonCaptionFactory BUTTON_DEFAULT_CAPTION_FACTORY = new ButtonCaptionFactory();
+	protected static Alignment BUTTON_DEFAULT_ALIGNMENT = Alignment.MIDDLE_RIGHT;
 	
 	/**
-	 * You can override the class {@link DialogIconFactory} to customize the default dialog icons. 
+	 * Keeps the reference to the {@link ButtonCaptionFactory}
 	 */
-	private static ButtonIconFactory BUTTON_DEFAULT_ICON_FACTORY = new ClassicButtonIconFactory();
+	protected static ButtonCaptionFactory BUTTON_DEFAULT_CAPTION_FACTORY = new ButtonCaptionFactory();
 	
-	//TODO disable icons
+	/**
+	 * Keeps the reference to the {@link ButtonIconFactory}
+	 */
+	protected static ButtonIconFactory BUTTON_DEFAULT_ICON_FACTORY = new ClassicButtonIconFactory();
+	
+	/**
+	 * Keeps default configuration of the visibility of the button icons
+	 */
+	protected static boolean BUTTON_DEFAULT_ICONS_VISIBLE = true;
 	
 	// dialog specific configurations =========================================
 	
 	/**
-	 * Keeps the reference to the window of the messagebox.
+	 * Keeps the reference to the window of the MessageBox.
 	 */
 	protected Window window;
 	
 	/**
-	 * The main layout for the messagebox.
+	 * The main layout for the MessageBox.
 	 */
 	protected VerticalLayout mainLayout;
 	
 	/**
-	 * The content layout for the messagebox. It is the first item in the {@link #mainLayout}.
+	 * The content layout for the MessageBox. It is the first item in the {@link #mainLayout}.
 	 */
 	protected HorizontalLayout contentLayout;
 	
 	/**
-	 * The button layout for the messagebox. It is the second item in the {@link #mainLayout}.
+	 * The button layout for the MessageBox. It is the second item in the {@link #mainLayout}.
 	 */
 	protected HorizontalLayout buttonLayout;
 	
@@ -150,31 +163,62 @@ public class MessageBox implements Serializable {
 	 */
 	protected Component messageComponent;
 	
+	/**
+	 * The buttonWidth, that should applied this MessageBox instance
+	 */
 	protected String buttonWidth;
 	
+	/**
+	 * Stores the state, if the buttons were added to the dialog window
+	 */
 	protected boolean buttonAdded;
 	
+	/**
+	 * Stores a data object to the MessageBox
+	 */
 	protected Object data;
+	
+	/**
+	 * Stores the state, if the dialog window cannot modified anymore
+	 */
+	protected boolean immutable;
 	
 	// static methods =========================================================
 	
+	/**
+	 * You can implement transitions inside the {@link TransitionListener}.
+	 * 
+	 * @param listener The {@link TransitionListener}
+	 */
 	public static void setDialogDefaultTransitionListener(TransitionListener listener) {
 		DIALOG_DEFAULT_TRANSITION_LISTENER = listener;
 	}
 	
-	
+	/**
+	 * Here you can configure a default language for the dialogs application scoped.
+	 * 
+	 * @param locale The new application-scoped language
+	 */
 	public static void setDialogDefaultLanguage(Locale locale) {
 		if (locale != null) {
 			DIALOG_DEFAULT_LOCALE = locale;
 		}
 	}
 	
-	public static void setSessionLanguage(Locale locale) {
+	/**
+	 * Here you can configure a default language for the dialogs session scoped.
+	 * 
+	 * @param locale The new session-scoped language
+	 */
+	public static void setDialogSessionLanguage(Locale locale) {
 		VaadinService.getCurrentRequest().getWrappedSession().setAttribute(ButtonCaptionFactory.LANGUAGE_SESSION_KEY, locale);
 	}
 	
 	/**
-	 * @param dialogIconFactory
+	 * You can apply with this method another dialog icon set.
+	 * You can override the class {@link DialogIconFactory} to define own dialog icons.
+	 * 
+	 * @param dialogIconFactory The new {@link DialogIconFactory}
 	 */
 	public static void setDialogDefaultIconFactory(DialogIconFactory dialogIconFactory) {
 		if (dialogIconFactory != null) {
@@ -183,7 +227,11 @@ public class MessageBox implements Serializable {
 	}
 	
 	/**
-	 * @param defaultDialogIconFactory
+	 * Defines the default width of the dialog icon. It is recommended to set it unequal '-1px', 
+	 * because otherwise there is re-rendering of dialog recognizable when the dialog is displayed.
+	 * The cause is, that the icon is lazy loaded. 
+	 * 
+	 * @param width The new width
 	 */
 	public static void setDialogDefaultIconWidth(String width) {
 		if (width != null) {
@@ -192,7 +240,11 @@ public class MessageBox implements Serializable {
 	}
 	
 	/**
-	 * @param defaultDialogIconFactory
+	 * Defines the default height of the dialog icon. It is recommended to set it unequal '-1px', 
+	 * because otherwise there is re-rendering of dialog recognizable when the dialog is displayed.
+	 * The cause is, that the icon is lazy loaded.
+	 * 
+	 * @param height The new height
 	 */
 	public static void setDialogDefaultIconHeight(String height) {
 		if (height != null) {
@@ -201,7 +253,10 @@ public class MessageBox implements Serializable {
 	}
 	
 	/**
-	 * @param defaultDialogIconFactory
+	 * Configures the default button alignment.
+	 * The default value is <code>Alignment.MIDDLE_RIGHT</code>.
+	 * 
+	 * @param alignment The new alignment
 	 */
 	public static void setButtonDefaultAlignment(Alignment alignment) {
 		if (alignment != null) {
@@ -209,18 +264,36 @@ public class MessageBox implements Serializable {
 		}
 	}
 	
+	/**
+	 * You can override the class {@link ButtonIconFactory} to customize the default button icons.
+	 * 
+	 *  @param factory The new {@link ButtonIconFactory}
+	 */
 	public static void setButtonDefaultIconFactory(ButtonIconFactory factory) {
 		if (factory != null) {
 			BUTTON_DEFAULT_ICON_FACTORY = factory;
 		}
 	}
 	
+	/**
+	 * You can override the class {@link ButtonCaptionFactory} to customize the default button captions.
+	 * 
+	 *  @param factory The new {@link ButtonCaptionFactory}
+	 */
 	public static void setButtonDefaultCaptionFactory(ButtonCaptionFactory factory) {
 		if (factory != null) {
 			BUTTON_DEFAULT_CAPTION_FACTORY = factory;
 		}
 	}
 	
+	/**
+	 * You can configure, if the button icons are visible or not
+	 * 
+	 * @param visible Sets the visiblity of the button icons
+	 */
+	public static void setButtonDefaultIconsVisible(boolean visible) {
+		BUTTON_DEFAULT_ICONS_VISIBLE = visible;
+	}
 	
 	// constructors ===========================================================
 	
@@ -260,14 +333,18 @@ public class MessageBox implements Serializable {
 		mainLayout.addComponent(buttonLayout);
 		mainLayout.setComponentAlignment(buttonLayout, BUTTON_DEFAULT_ALIGNMENT);	
 		
+		// Initialize internal states
 		buttonAdded = false;
+		immutable = false;
 	}
 	
 	// methods for customizing the dialog =====================================
 	
 	/**
 	 * Switches, if the dialog is shown modal or not.
+	 * 
 	 * @param modal If set to <code>true</code>, the dialog is shown modal.
+	 * 
 	 * @return The {@link MessageBox} instance itself
 	 */
 	public MessageBox asModal(boolean modal) {
@@ -277,44 +354,10 @@ public class MessageBox implements Serializable {
 	
 	/**
 	 * Sets an icon to the message dialog.
+	 * 
 	 * @param icon An embedded resource
-	 * @return The MessageBox instance itself
-	 */
-	public MessageBox asQuestion() {
-		return withIcon(DIALOG_DEFAULT_ICON_FACTORY.getQuestionIcon());
-	}
-	
-	/**
-	 * Sets an icon to the message dialog.
-	 * @param icon An embedded resource
-	 * @return The MessageBox instance itself
-	 */
-	public MessageBox asInfo() {
-		return withIcon(DIALOG_DEFAULT_ICON_FACTORY.getInfoIcon());
-	}
-	
-	/**
-	 * Sets an icon to the message dialog.
-	 * @param icon An embedded resource
-	 * @return The MessageBox instance itself
-	 */
-	public MessageBox asWarning() {
-		return withIcon(DIALOG_DEFAULT_ICON_FACTORY.getWarningIcon());
-	}
-	
-	/**
-	 * Sets an icon to the message dialog.
-	 * @param icon An embedded resource
-	 * @return The MessageBox instance itself
-	 */
-	public MessageBox asError() {
-		return withIcon(DIALOG_DEFAULT_ICON_FACTORY.getErrorIcon());
-	}
-	
-	/**
-	 * Sets an icon to the message dialog.
-	 * @param icon An embedded resource
-	 * @return The MessageBox instance itself
+	 * 
+	 * @return The {@link MessageBox} instance itself
 	 */
 	public MessageBox withIcon(Embedded icon) {
 		return withIcon(icon, DIALOG_DEFAULT_ICON_WIDTH, DIALOG_DEFAULT_ICON_HEIGHT);
@@ -322,10 +365,12 @@ public class MessageBox implements Serializable {
 	
 	/**
 	 * Sets an icon to the message dialog.
+	 * 
 	 * @param icon An embedded resource
 	 * @param width The width i.e. "48px"
 	 * @param height The height i.e. "48px"
-	 * @return The MessageBox instance itself
+	 * 
+	 * @return The {@link MessageBox} instance itself
 	 */
 	public MessageBox withIcon(Embedded icon, String width, String height) {
 		if (this.icon != null) {
@@ -345,8 +390,10 @@ public class MessageBox implements Serializable {
 	
 	/**
 	 * Sets the caption of the message dialog.
+	 * 
 	 * @param caption The caption of the message dialog
-	 * @return The MessageBox instance itself
+	 * 
+	 * @return The {@link MessageBox} instance itself
 	 */
 	public MessageBox withCaption(String caption) {
 		window.setCaption(caption);
@@ -355,8 +402,10 @@ public class MessageBox implements Serializable {
 	
 	/**
 	 * Sets a component as content to the message dialog.
+	 * 
 	 * @param messageComponent The component as content
-	 * @return The MessageBox instance itself
+	 * 
+	 * @return The {@link MessageBox} instance itself
 	 */
 	public MessageBox withMessage(Component messageComponent) {
 		if (this.messageComponent != null) {
@@ -376,8 +425,10 @@ public class MessageBox implements Serializable {
 	
 	/**
 	 * Sets HTML as content to the message dialog.
-	 * @param htmlMessage HTML as content
-	 * @return The MessageBox instance itself
+	 * 
+	 * @param htmlMessage HTML as message
+	 * 
+	 * @return The {@link MessageBox} instance itself
 	 */
 	public MessageBox withHtmlMessage(String htmlMessage) {
 		return withMessage(new Label(htmlMessage, ContentMode.HTML));
@@ -385,8 +436,10 @@ public class MessageBox implements Serializable {
 	
 	/**
 	 * Sets plain text as content to the message dialog.
-	 * @param htmlContent HTML as content
-	 * @return The MessageBox instance itself
+	 * 
+	 * @param plainTextMessage plain text as message
+	 * 
+	 * @return The {@link MessageBox} instance itself
 	 */
 	public MessageBox withMessage(String plainTextMessage) {
 		return withHtmlMessage(encodeToHtml(plainTextMessage));
@@ -394,8 +447,10 @@ public class MessageBox implements Serializable {
 	
 	/**
 	 * Forces a width for the message dialog.
+	 * 
 	 * @param width The forced width
-	 * @return The {@link MessageBox} instance itself.
+	 * 
+	 * @return The {@link MessageBox} instance
 	 */
 	public MessageBox withWidth(String width) {
 		window.setWidth(width);
@@ -409,8 +464,10 @@ public class MessageBox implements Serializable {
 	
 	/**
 	 * Forces a height for the message dialog.
+	 * 
 	 * @param height The forced height
-	 * @return The {@link MessageBox} instance itself.
+	 * 
+	 * @return The {@link MessageBox} instance
 	 */
 	public MessageBox withHeight(String height) {
 		window.setHeight(height);
@@ -424,9 +481,11 @@ public class MessageBox implements Serializable {
 	
 	/**
 	 * Forces a position for the message dialog.
+	 * 
 	 * @param x The x position
 	 * @param y The y position
-	 * @return The {@link MessageBox} instance itself.
+	 * 
+	 * @return The {@link MessageBox} instance
 	 */
 	public MessageBox withDialogPosition(int x, int y) {
 		window.setPosition(x, y);
@@ -435,7 +494,9 @@ public class MessageBox implements Serializable {
 	
 	/**
 	 * Forces a x position for the message dialog.
+	 * 
 	 * @param x The x position
+	 * 
 	 * @return The {@link MessageBox} instance itself
 	 */
 	public MessageBox withDialogPositionX(int x) {
@@ -445,7 +506,9 @@ public class MessageBox implements Serializable {
 	
 	/**
 	 * Forces a y position for the message dialog.
+	 * 
 	 * @param y The y position
+	 * 
 	 * @return The {@link MessageBox} instance itself
 	 */
 	public MessageBox withDialogPositionY(int y) {
@@ -454,9 +517,11 @@ public class MessageBox implements Serializable {
 	}
 	
 	/**
-	 * Customizes the button alignment. 
+	 * Customizes the button alignment.
+	 *  
 	 * @param alignment The new button alignment
-	 * @return The {@link MessageBox} instance itself.
+	 * 
+	 * @return The {@link MessageBox} instance
 	 */
 	public MessageBox withButtonAlignment(Alignment alignment) {
 		if (alignment != null) {
@@ -465,16 +530,41 @@ public class MessageBox implements Serializable {
 		return this;
 	}
 	
+	/**
+	 * Adds a blank space after the last added button.
+	 *  
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withButtonSpacer() {
+		if (immutable) {
+			throw new IllegalStateException("The dialog cannot be enhanced with a spacer after it has been opened.");
+		}
 		buttonLayout.addComponent(new Label("&nbsp;", ContentMode.HTML));
 		return this;
 	}
 	
+	/**
+	 * Alias method for {link {@link #withButtonSpacer()}
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withSpacer() {
 		return withButtonSpacer();
 	}
 
+	/**
+	 * Adds a button. If an event listener (java.lang.Runnable) should be applied, the Runnable must be
+	 *  assigned to the object attribute data.
+	 * 
+	 * @param button The button
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withButton(Button button, ButtonOption... options) {
+		if (immutable) {
+			throw new IllegalStateException("The dialog cannot be enhanced with a button after it has been opened.");
+		}
 		if (button != null) {
 			buttonLayout.addComponent(button);
 			
@@ -509,49 +599,139 @@ public class MessageBox implements Serializable {
 		return this;
 	}
 	
+	/**
+	 * Adds a button.
+	 * 
+	 * @param buttonType A {@link ButtonType}
+	 * @param runOnClick The Runnable, that is executed on clicking the button
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withButton(ButtonType buttonType, Runnable runOnClick, ButtonOption... options) {
 		Button button = new Button(BUTTON_DEFAULT_CAPTION_FACTORY.translate(buttonType, DIALOG_DEFAULT_LOCALE));
 		button.setData(runOnClick);
-		button.setIcon(BUTTON_DEFAULT_ICON_FACTORY.getIcon(buttonType));
+		if (BUTTON_DEFAULT_ICONS_VISIBLE) {
+			button.setIcon(BUTTON_DEFAULT_ICON_FACTORY.getIcon(buttonType));
+		}
 		return withButton(button, options);
 	}
 	
+	/**
+	 * Adds an "ok" labeled button.
+	 * 
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withOkButton(ButtonOption... options) {
 		return withOkButton(null, options);
 	}
 	
+	/**
+	 * Adds an "ok" labeled button.
+	 * 
+	 * @param runOnClick The Runnable, that is executed on clicking the button
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withOkButton(Runnable runOnClick, ButtonOption... options) {
 		return withButton(ButtonType.OK, runOnClick, options);
 	}
 	
+	/**
+	 * Adds an "abort" labeled button.
+	 * 
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withAbortButton(ButtonOption... options) {
 		return withAbortButton(null, options);
 	}
 	
+	/**
+	 * Adds an "abort" labeled button.
+	 * 
+	 * @param runOnClick The Runnable, that is executed on clicking the button
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withAbortButton(Runnable runOnClick, ButtonOption... options) {
 		return withButton(ButtonType.ABORT, runOnClick, options);
 	}
 	
+	/**
+	 * Adds an "cancel" labeled button.
+	 * 
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withCancelButton(ButtonOption... options) {
 		return withCancelButton(null, options);
 	}
 	
+	/**
+	 * Adds an "cancel" labeled button.
+	 * 
+	 * @param runOnClick The Runnable, that is executed on clicking the button
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withCancelButton(Runnable runOnClick, ButtonOption... options) {
 		return withButton(ButtonType.CANCEL, runOnClick, options);
 	}
 	
+	/**
+	 * Adds an "close" labeled button.
+	 * 
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withCloseButton(ButtonOption... options) {
 		return withCloseButton(null, options);
 	}
 	
+	/**
+	 * Adds an "close" labeled button.
+	 * 
+	 * @param runOnClick The Runnable, that is executed on clicking the button
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withCloseButton(Runnable runOnClick, ButtonOption... options) {
 		return withButton(ButtonType.CLOSE, runOnClick, options);
 	}
 	
+	/**
+	 * Adds an "help" labeled button. The help button has a special behavior.
+	 * It does not close the dialog on default. But you can override this
+	 * behavior with a {@link ButtonOption}.
+	 * 
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withHelpButton(ButtonOption... options) {
 		return withHelpButton(null, options);
 	}
 	
+	/**
+	 * Adds an "help" labeled button. The help button has a special behavior.
+	 * It does not close the dialog on default. But you can override this
+	 * behavior with a {@link ButtonOption}.
+	 * 
+	 * @param runOnClick The Runnable, that is executed on clicking the button
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withHelpButton(Runnable runOnClick, ButtonOption... options) {
 		ButtonOption[] finalOptions = options;
 		boolean addAutoCloseOption = true;
@@ -568,73 +748,187 @@ public class MessageBox implements Serializable {
 		return withButton(ButtonType.HELP, runOnClick, finalOptions);
 	}
 	
+	/**
+	 * Adds an "ignore" labeled button.
+	 * 
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withIgnoreButton(ButtonOption... options) {
 		return withIgnoreButton(null, options);
 	}
 	
+	/**
+	 * Adds an "ignore" labeled button.
+	 * 
+	 * @param runOnClick The Runnable, that is executed on clicking the button
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withIgnoreButton(Runnable runOnClick, ButtonOption... options) {
 		return withButton(ButtonType.IGNORE, runOnClick, options);
 	}
 	
+	/**
+	 * Adds an "no" labeled button.
+	 * 
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withNoButton(ButtonOption... options) {
 		return withNoButton(null, options);
 	}
 	
+	/**
+	 * Adds an "no" labeled button.
+	 * 
+	 * @param runOnClick The Runnable, that is executed on clicking the button
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withNoButton(Runnable runOnClick, ButtonOption... options) {
 		return withButton(ButtonType.NO, runOnClick, options);
 	}
 	
+	/**
+	 * Adds an "retry" labeled button.
+	 * 
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withRetryButton(ButtonOption... options) {
 		return withRetryButton(null, options);
 	}
 	
+	/**
+	 * Adds an "retry" labeled button.
+	 * 
+	 * @param runOnClick The Runnable, that is executed on clicking the button
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withRetryButton(Runnable runOnClick, ButtonOption... options) {
 		return withButton(ButtonType.RETRY, runOnClick, options);
 	}
 	
+	/**
+	 * Adds an "save" labeled button.
+	 * 
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withSaveButton(ButtonOption... options) {
 		return withSaveButton(null, options);
 	}
 	
+	/**
+	 * Adds an "save" labeled button.
+	 * 
+	 * @param runOnClick The Runnable, that is executed on clicking the button
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withSaveButton(Runnable runOnClick, ButtonOption... options) {
 		return withButton(ButtonType.SAVE, runOnClick, options);
 	}
 	
+	/**
+	 * Adds an "yes" labeled button.
+	 * 
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withYesButton(ButtonOption... options) {
 		return withYesButton(null, options);
 	}
 	
+	/**
+	 * Adds an "yes" labeled button.
+	 * 
+	 * @param runOnClick The Runnable, that is executed on clicking the button
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withYesButton(Runnable runOnClick, ButtonOption... options) {
 		return withButton(ButtonType.YES, runOnClick, options);
 	}
 	
+	/**
+	 * Adds a button for customizing. E.g. you can set the custom caption and custom
+	 * icon with a {@link ButtonOption}. 
+	 * 
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withCustomButton(ButtonOption... options) {
 		return withCustomButton(null, options);
 	}
 	
+	/**
+	 * Adds a button for customizing. E.g. you can set the custom caption and custom
+	 * icon with a {@link ButtonOption}. 
+	 * 
+	 * @param runOnClick The Runnable, that is executed on clicking the button
+	 * @param options Some optional {@link ButtonOption}s
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withCustomButton(Runnable runOnClick, ButtonOption... options) {
 		return withButton(null, runOnClick, options);
 	}
 	
 	/**
 	 * Sets the button width of all buttons for a symmetric appearance.
+	 * 
 	 * @param width The button width.
-	 * @return The {@link MessageBox} instance itself.
+	 * 
+	 * @return The {@link MessageBox} instance
 	 */
 	public MessageBox withWidthForAllButtons(String width) {
+		if (immutable) {
+			throw new IllegalStateException("The width for all buttons cannot be modified after the dialog has been opened.");
+		}
 		buttonWidth = width;
 		return this;
 	}
 	
+	/**
+	 * Sets a data object to the MessageBox.
+	 * 
+	 * @param data The data object
+	 * 
+	 * @return The {@link MessageBox} instance
+	 */
 	public MessageBox withData(Object data) {
 		setData(data);
 		return this;
 	}
 	
+	/**
+	 * Sets a data object to the MessageBox.
+	 * 
+	 * @param data The data object
+	 */
 	public void setData(Object data) {
 		this.data = data;
 	}
 	
+	/**
+	 * Returns the assigned data object to the MessageBox.
+	 * 
+	 * @return The assigned data object
+	 */
 	public Object getData() {
 		return data;
 	}
@@ -687,14 +981,54 @@ public class MessageBox implements Serializable {
 	// methods for showing and closing the dialog =============================
 	
 	/**
-	 * Creates and opens the window for the MessageBox.
-	 * @return The message dialog instance  
+	 * Creates the MessageBox instance without an icon.
+	 * 
+	 * @return The {@link MessageBox} instance  
 	 */
 	public static MessageBox create() {
 		return new MessageBox();
 	}
 	
-	public void open() {
+	/**
+	 * Creates the MessageBox instance with an info icon.
+	 * 
+	 * @return The {@link MessageBox} instance  
+	 */
+	public static MessageBox createInfo() {
+		return create().withIcon(DIALOG_DEFAULT_ICON_FACTORY.getInfoIcon());
+	}
+	
+	/**
+	 * Creates the MessageBox instance with a question icon.
+	 * 
+	 * @return The {@link MessageBox} instance  
+	 */
+	public static MessageBox createQuestion() {
+		return create().withIcon(DIALOG_DEFAULT_ICON_FACTORY.getQuestionIcon());
+	}
+	
+	/**
+	 * Creates the MessageBox instance with a warning icon.
+	 * 
+	 * @return The {@link MessageBox} instance  
+	 */
+	public static MessageBox createWarning() {
+		return create().withIcon(DIALOG_DEFAULT_ICON_FACTORY.getWarningIcon());
+	}
+	
+	/**
+	 * Creates the MessageBox instance with an error icon.
+	 * 
+	 * @return The {@link MessageBox} instance  
+	 */
+	public static MessageBox createError() {
+		return create().withIcon(DIALOG_DEFAULT_ICON_FACTORY.getErrorIcon());
+	}
+	
+	/**
+	 * Shows the dialog.  
+	 */
+	public void open() {	
 		// Ensure, that the dialog has at least one button
 		if (!buttonAdded) {
 			withCloseButton();
@@ -712,8 +1046,10 @@ public class MessageBox implements Serializable {
 		
 		// Add window to the UI
 		if (DIALOG_DEFAULT_TRANSITION_LISTENER == null || (DIALOG_DEFAULT_TRANSITION_LISTENER != null && DIALOG_DEFAULT_TRANSITION_LISTENER.show(this))) {
-			UI.getCurrent().addWindow(getWindow());
+			UI.getCurrent().addWindow(window);
 		}
+		
+		immutable = true;
 	}
 	
 	/**

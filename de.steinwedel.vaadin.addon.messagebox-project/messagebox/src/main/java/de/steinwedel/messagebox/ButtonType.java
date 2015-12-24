@@ -1,7 +1,7 @@
 package de.steinwedel.messagebox;
 
 /**
- * An enumeration for identifying the kind of the button. The value affects the displayed button icon and caption.
+ * An enumeration of button types. The value affects the displayed button icon and caption.
  * 
  * @author Dieter Steinwedel
  */

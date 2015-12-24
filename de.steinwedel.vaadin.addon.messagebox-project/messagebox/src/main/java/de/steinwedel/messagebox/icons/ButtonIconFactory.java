@@ -6,14 +6,10 @@ import com.vaadin.server.ClassResource;
 import com.vaadin.server.Resource;
 
 import de.steinwedel.messagebox.ButtonType;
-import de.steinwedel.messagebox.MessageBox;
 
 /**
- * TODO
- * Manages the loading of default resources like icons and button captions. You can override the method <code>getIcon</code> to use customized icons.
- * The overridden <code>DefaultResources</code> must be set to the static member {@link MessageBox#RESOURCE_FACTORY}.
- * You can change the default captions of the buttons by using a different {@link java.util.ResourceBundle}. 
- * You can assign the new {@link java.util.ResourceBundle} with the method {@link #setResourceBundle(java.lang.String)} or {@link #setResourceBundle(java.lang.String, java.util.Locale)} . 
+ * This class implements the default behavior for loading icons for the buttons. You can
+ * override this class to apply an own icon set.  
  * 
  * @author Dieter Steinwedel
  */
@@ -23,17 +19,27 @@ public abstract class ButtonIconFactory implements Serializable {
 	
 	protected Class<?> associatedClass;
 	protected String relativePath;
+	protected String extention;
 	
 	/**
-	 * TODO
-	 * @param associatedClass
-	 * @param relativePath
+	 * The constructor
+	 * 
+	 * @param associatedClass The associated class for loading the resources
+	 * @param relativePath The relative path to the resources starting from the associated class
+	 * @param extention The file extention of the images f.e. "png" or "svg"
 	 */
-	public ButtonIconFactory(Class<?> associatedClass, String relativePath) {
+	public ButtonIconFactory(Class<?> associatedClass, String relativePath, String extention) {
 		this.associatedClass = associatedClass;
 		this.relativePath = relativePath;
+		this.extention = extention;
 	}
 	
+	/**
+	 * Loads the resource for the given buttonType.
+	 * 
+	 * @param buttonType
+	 * @return the resource
+	 */
 	public Resource getIcon(ButtonType buttonType) {
 		if (buttonType == null) {
 			return null;
@@ -42,20 +48,20 @@ public abstract class ButtonIconFactory implements Serializable {
 		case ABORT:
 		case CANCEL:
 		case NO:
-			return new ClassResource(associatedClass, relativePath + "/cross.png");
+			return new ClassResource(associatedClass, relativePath + "/cross." + extention);
 		case OK:
 		case YES:
-			return new ClassResource(associatedClass, relativePath + "/tick.png");
+			return new ClassResource(associatedClass, relativePath + "/tick." + extention);
 		case SAVE:
-			return new ClassResource(associatedClass, relativePath + "/disk.png");	
+			return new ClassResource(associatedClass, relativePath + "/disk." + extention);	
 		case HELP:	
-			return new ClassResource(associatedClass, relativePath + "/lightbulb.png");
+			return new ClassResource(associatedClass, relativePath + "/lightbulb." + extention);
 		case IGNORE:
-			return new ClassResource(associatedClass, relativePath + "/lightning_go.png");	
+			return new ClassResource(associatedClass, relativePath + "/lightning_go." + extention);	
 		case RETRY:
-			return new ClassResource(associatedClass, relativePath + "/arrow_refresh.png");	
+			return new ClassResource(associatedClass, relativePath + "/arrow_refresh." + extention);	
 		case CLOSE:
-			return new ClassResource(associatedClass, relativePath + "/door.png");
+			return new ClassResource(associatedClass, relativePath + "/door." + extention);
 		default:
 			return null;
 		}
