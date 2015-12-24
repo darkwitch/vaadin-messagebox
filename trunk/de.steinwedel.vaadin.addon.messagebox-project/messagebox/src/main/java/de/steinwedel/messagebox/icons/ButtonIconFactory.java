@@ -37,8 +37,8 @@ public abstract class ButtonIconFactory implements Serializable {
 	/**
 	 * Loads the resource for the given buttonType.
 	 * 
-	 * @param buttonType
-	 * @return the resource
+	 * @param buttonType The ButtonType
+	 * @return The resource
 	 */
 	public Resource getIcon(ButtonType buttonType) {
 		if (buttonType == null) {

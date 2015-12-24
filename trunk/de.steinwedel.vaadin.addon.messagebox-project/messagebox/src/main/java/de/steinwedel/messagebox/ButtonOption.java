@@ -15,8 +15,8 @@ public abstract class ButtonOption {
 	/**
 	 * Is used internally.
 	 * 
-	 * @param messageBox
-	 * @param button
+	 * @param messageBox The corresponding MessageBox
+	 * @param button The corresponding button
 	 */
 	public abstract void apply(MessageBox messageBox, Button button);
 	
@@ -42,7 +42,7 @@ public abstract class ButtonOption {
 	/**
 	 * Applies a style to the corresponding button.
 	 * 
-	 * @param styleName
+	 * @param styleName The style to apply
 	 * @return The ButtonOption
 	 */
 	public static ButtonOption style(final String styleName) {
@@ -62,7 +62,7 @@ public abstract class ButtonOption {
 	/**
 	 * Changes the width of the corresponding button.
 	 * 
-	 * @param width
+	 * @param width The width to apply
 	 * @return The ButtonOption
 	 */
 	public static ButtonOption width(final String width) {
@@ -82,7 +82,7 @@ public abstract class ButtonOption {
 	/**
 	 * Changes the caption of the corresponding button.
 	 * 
-	 * @param caption
+	 * @param caption The caption to apply
 	 * @return The ButtonOption
 	 */
 	public static ButtonOption caption(final String caption) {
@@ -133,7 +133,7 @@ public abstract class ButtonOption {
 	/**
 	 * Changes the behavior of the corresponding button. If true, a click on the button closes the MessageBox.
 	 * 
-	 * @param width
+	 * @param closeOnClick If true, then the dialog is closed on clicking the button 
 	 * @return The ButtonOption
 	 */
 	public static ButtonOption closeOnClick(final boolean closeOnClick) {
@@ -143,7 +143,7 @@ public abstract class ButtonOption {
 	/**
 	 * Sets the icon of the corresponding button.
 	 * 
-	 * @param width
+	 * @param icon The new icon
 	 * @return The ButtonOption
 	 */
 	public static ButtonOption icon(final Resource icon) {

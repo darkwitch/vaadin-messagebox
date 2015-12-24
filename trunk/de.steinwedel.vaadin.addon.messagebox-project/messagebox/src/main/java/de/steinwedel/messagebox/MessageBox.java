@@ -51,14 +51,13 @@ import de.steinwedel.messagebox.icons.DialogIconFactory;
  * <li>Many examples and JavaDoc are available</li>
  * <li>Source code with examples can be find at Sourceforge: http://sourceforge.net/p/messagebox/code/HEAD/tree/</li>
  * </ul>
- * </p>
  * <p><b>USAGE</b></p>
  * <p>
  * <code>MessageBox.createInfo().withCaption("Example 1").withMessage("Hello World!").withOkButton().open();</code>
  * This example shows a simple message dialog, with "Example 1" as dialog 
  * caption, an info icon, "Hello World!" as message and an "Ok" labeled button. The 
  * dialog is displayed modally. To receive an event of the pressed button, add an Instance of <code>java.lang.Runnable</code>
- * to the parameters of the method <code>withOkButton()</code> f. e. <code>(() -> { System.out.println("Ok pressed")});</code>. 
+ * to the parameters of the method <code>withOkButton()</code> f. e. <code>(() -&gt; { System.out.println("Ok pressed")});</code>. 
  * The Runnable is executed after the button was pressed.
  * <br>
  * I have added a demo class (Demo.java) with many examples, to show most of the possible use cases.
@@ -87,7 +86,7 @@ public class MessageBox implements Serializable {
 	// default configurations =================================================
 
 	/**
-	 * Keeps the reference of the {@link TransistionListener}
+	 * Keeps the reference of the TransistionListener
 	 */
 	protected static TransitionListener DIALOG_DEFAULT_TRANSITION_LISTENER;
 	
