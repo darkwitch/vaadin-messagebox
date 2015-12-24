@@ -23,19 +23,19 @@ public class ButtonCaptionFactory implements Serializable {
 	/**
 	 * Translates the caption for the given buttonType.
 	 * 
-	 * @param buttonType
-	 * @param defaultLocale
+	 * @param buttonType The ButtonType
+	 * @param defaultLanguage The default language
 	 * 
 	 * @return The translated caption
 	 */
-	public String translate(ButtonType buttonType, Locale defaultLocale) {
+	public String translate(ButtonType buttonType, Locale defaultLanguage) {
 		if (buttonType == null) {
 			return "";
 		}
 		
 		String basename = ButtonCaptions.class.getName();
 		
-		Locale locale = defaultLocale;
+		Locale locale = defaultLanguage;
 		Object value = VaadinService.getCurrentRequest().getWrappedSession().getAttribute(LANGUAGE_SESSION_KEY);
 		if (value != null && value instanceof Locale) {
 			locale = (Locale) value;
