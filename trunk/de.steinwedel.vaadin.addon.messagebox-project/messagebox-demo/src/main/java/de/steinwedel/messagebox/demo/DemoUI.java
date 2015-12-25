@@ -1,8 +1,6 @@
 package de.steinwedel.messagebox.demo;
 
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -90,12 +88,8 @@ public class DemoUI extends UI {
 		InputStream is = null;
 		source = "";
 		try {
-			URL url = new URL("http://sourceforge.net/p/messagebox/code/HEAD/tree/trunk/de.steinwedel.vaadin.addon.messagebox-project/messagebox-demo/src/main/java/de/steinwedel/messagebox/demo/DemoUI.java?format=raw");
-			URLConnection con = url.openConnection();
-			is = con.getInputStream();
-			String encoding = con.getContentEncoding();
-			encoding = encoding == null ? "UTF-8" : encoding;
-			source = IOUtils.toString(is, encoding);
+			is = getClass().getResourceAsStream(getClass().getSimpleName() + ".java");
+			source = IOUtils.toString(is, "UTF-8");
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
