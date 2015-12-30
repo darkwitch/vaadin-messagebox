@@ -97,7 +97,7 @@
 	<dependency>
 		<groupId>de.steinwedel.vaadin.addon</groupId>
 		<artifactId>messagebox</artifactId>
-		<version>${project.version}</version>
+		<version>3.0.4</version>
 	</dependency>
   </dependencies>
   
