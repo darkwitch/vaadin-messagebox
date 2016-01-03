@@ -9,7 +9,7 @@ import de.steinwedel.messagebox.ButtonType;
  * Loads the FontAwesome icon set. The default color of the icons is black. 
  * You can customize the color of all icons in the css.
  * The corresponding selectors are "v-button-messageBoxIcon" for all button icons and
- * "v-button-<ButtonType>Icon" for a specific ButtonType. This example uses following css:
+ * "v-button-&lt;ButtonType&gt;Icon" for a specific ButtonType. This example uses following css:
  *   
  * <pre>
  * .v-button-messageBoxIcon .v-icon {
