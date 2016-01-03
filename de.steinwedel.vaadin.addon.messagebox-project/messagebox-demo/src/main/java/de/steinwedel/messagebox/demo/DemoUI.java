@@ -34,8 +34,11 @@ import com.vaadin.ui.themes.BaseTheme;
 import de.steinwedel.messagebox.ButtonOption;
 import de.steinwedel.messagebox.MessageBox;
 import de.steinwedel.messagebox.TransitionListener;
+import de.steinwedel.messagebox.icons.ClassicButtonIconFactory;
 import de.steinwedel.messagebox.icons.ClassicDialogIconFactory;
 import de.steinwedel.messagebox.icons.FlatDialogIconFactory;
+import de.steinwedel.messagebox.icons.FontAwesomeButtonIconFactory;
+import de.steinwedel.messagebox.icons.FontAwesomeDialogIconFactory;
 
 @Theme("demo")
 @Title("MessageBox Add-on Demo")
@@ -190,6 +193,7 @@ public class DemoUI extends UI {
 					.withNoButton()
 					.withIgnoreButton()
 					.withRetryButton()
+					.withSaveButton()
 					.open();
 			}
 
@@ -341,6 +345,9 @@ public class DemoUI extends UI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// You don't like the default placement? You can change it ...
+				//
+				// You can change the default behavior on calling 
+				// MessageBox.setButtonDefaultAlignment(Alignment.MIDDLE_CENTER)
 				
 				MessageBox.createInfo()
 					.withCaption("Buttons centered")
@@ -359,6 +366,9 @@ public class DemoUI extends UI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// You don't like the default placement? You can change it ...
+				//
+				// You can change the default behavior on calling 
+				// MessageBox.setButtonDefaultAlignment(Alignment.MIDDLE_LEFT)
 				
 				MessageBox.createInfo()
 					.withCaption("Buttons left")
@@ -586,7 +596,7 @@ public class DemoUI extends UI {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// If you want to implement in the listener yourself
+				// If you want to implement in the listener yourselfredicon
 				// when the dialog is closed, call setAutoClose(false).
 				MessageBox.createQuestion()
 						.withCaption("Default icons")
@@ -628,7 +638,41 @@ public class DemoUI extends UI {
 						.open();
 			}
 		});
-        addExample("Switch icon set", "You can switch the dialog icon set.", new ClickListener() {
+        addExample("Dialog icon set", "You can switch the dialog icon set.", new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// You can simply switch the dialog set.
+				// You can switch to an own icon sets in the same way.
+				//
+				// IMPORTANT
+				// =========
+				// If you are using "FontAwesome", the default color of the icons is black.
+				// You can customize the color of all icons in the css.
+				// The corresponding selectors are "v-label-infoIcon", "v-label-questionIcon", 
+				// "v-label-warningIcon", "v-label-errorIcon". This example uses following css:
+				// 
+				// .v-label-questionIcon, .v-label-infoIcon {
+				// 		color: #0080B0;
+				// }
+				//
+				// .v-label-warningIcon, .v-label-errorIcon {
+				// 		color: #E00000;
+				// }
+				
+				MessageBox.createQuestion()
+						.withCaption("Dialog icon set")
+						.withMessage("Which icon set should be used?")
+						.withCustomButton(() -> { MessageBox.setDialogDefaultIconFactory(new ClassicDialogIconFactory()); }, ButtonOption.caption("Classic"))
+						.withCustomButton(() -> { MessageBox.setDialogDefaultIconFactory(new FlatDialogIconFactory()); }, ButtonOption.caption("Flat"))
+						.withCustomButton(() -> { MessageBox.setDialogDefaultIconFactory(new FontAwesomeDialogIconFactory()); }, ButtonOption.caption("FontAwesome"))
+						.open();
+			}
+		});
+        
+        addExample("Button icon set", "You can switch the button icon set.", new ClickListener() {
 
 			private static final long serialVersionUID = 1L;
 			
@@ -636,12 +680,27 @@ public class DemoUI extends UI {
 			public void buttonClick(ClickEvent event) {
 				// You can simply switch the dialog set.
 				// You can switch to an own icon sets in the same way. 
-				
+				//
+				// IMPORTANT
+				// =========
+				// If you are using "FontAwesome", the default color of the icons is black. 
+				// You can customize the color of all icons in the css.
+				// The corresponding selectors are "v-button-messageBoxIcon" for all button icons and
+				// "v-button-<ButtonType>Icon" for a specific ButtonType. This example uses following css:
+				// 
+				// .v-button-messageBoxIcon .v-icon {
+				//		color: #0080B0; /* blue for all buttons */
+				// }
+				//
+				// .v-button-closeIcon .v-icon {
+				//		color: #000000; /* black for the close button */
+				// }
+
 				MessageBox.createQuestion()
-						.withCaption("Default icons")
-						.withMessage("Should the flat icons be enabled?")
-						.withYesButton(() -> { MessageBox.setDialogDefaultIconFactory(new FlatDialogIconFactory()); })
-						.withNoButton(() -> { MessageBox.setDialogDefaultIconFactory(new ClassicDialogIconFactory()); })
+						.withCaption("Button icon set")
+						.withMessage("Which icon set should be used?")
+						.withCustomButton(() -> { MessageBox.setButtonDefaultIconFactory(new ClassicButtonIconFactory()); }, ButtonOption.caption("Classic"))
+						.withCustomButton(() -> { MessageBox.setButtonDefaultIconFactory(new FontAwesomeButtonIconFactory()); }, ButtonOption.caption("FontAwesome"))
 						.open();
 			}
 		});

@@ -1,11 +1,11 @@
 package de.steinwedel.messagebox.icons;
 
 /**
- * Loads the classic icon set. 
+ * Loads the flat icon set. 
  * 
  * @author Dieter Steinwedel
  */
-public class FlatDialogIconFactory extends DialogIconFactory {
+public class FlatDialogIconFactory extends AbstractDialogIconFactory {
 	
 	private static final long serialVersionUID = 1L;
 	

@@ -53,7 +53,7 @@ public abstract class ButtonOption {
 			 */
 			@Override
 			public void apply(MessageBox messageBox, Button button) {
-				button.setStyleName(styleName);
+				button.addStyleName(styleName);
 			}
 			
 		};
