@@ -5,7 +5,7 @@ package de.steinwedel.messagebox.icons;
  * 
  * @author Dieter Steinwedel
  */
-public class ClassicDialogIconFactory extends DialogIconFactory {
+public class ClassicDialogIconFactory extends AbstractDialogIconFactory {
 	
 	private static final long serialVersionUID = 1L;
 	

@@ -33,4 +33,20 @@ $darkgreen: darken($green, 30%);
              0px 34px 30px rgba(0,0,0,0.1);
         text-align: center;
 	}
+	
+	.v-button-messageBoxIcon .v-icon {
+		color: #0080B0;
+	}
+	
+	.v-button-closeIcon .v-icon {
+		color: #000000;
+	}
+	
+	.v-label-questionIcon, .v-label-infoIcon {
+		color: #0080B0;
+	}
+	
+	.v-label-warningIcon, .v-label-errorIcon {
+		color: #E00000;
+	}
 }

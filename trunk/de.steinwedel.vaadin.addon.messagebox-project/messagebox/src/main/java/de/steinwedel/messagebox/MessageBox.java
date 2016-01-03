@@ -12,7 +12,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -101,14 +100,9 @@ public class MessageBox implements Serializable {
 	protected static DialogIconFactory DIALOG_DEFAULT_ICON_FACTORY = new ClassicDialogIconFactory();
 	
 	/**
-	 * Keeps the icon default width
+	 * Keeps the icon default width and height
 	 */
-	protected static String DIALOG_DEFAULT_ICON_WIDTH = "48px";
-	
-	/**
-	 * Keeps the icon default height
-	 */
-	protected static String DIALOG_DEFAULT_ICON_HEIGHT = "48px";
+	protected static String DIALOG_DEFAULT_ICON_SIZE = "48px";
 
 	/**
 	 * Keeps the button default alignment
@@ -155,7 +149,7 @@ public class MessageBox implements Serializable {
 	/**
 	 * The dialog icon for the message box. It is typically the first item in the {@link #contentLayout}.
 	 */
-	protected Embedded icon;
+	protected Component icon;
 	
 	/**
 	 * The component, that displays message. By default it is a label. Typically, this component is the second item in the {@link #contentLayout}.
@@ -226,28 +220,24 @@ public class MessageBox implements Serializable {
 	}
 	
 	/**
-	 * Defines the default width of the dialog icon. It is recommended to set it unequal '-1px', 
-	 * because otherwise there is re-rendering of dialog recognizable when the dialog is displayed.
-	 * The cause is, that the icon is lazy loaded. 
+	 * Returns the default size of the dialog icon. 
 	 * 
-	 * @param width The new width
+	 * @return The dialog icon size
 	 */
-	public static void setDialogDefaultIconWidth(String width) {
-		if (width != null) {
-			DIALOG_DEFAULT_ICON_WIDTH = width;
-		}
+	public static String getDialogDefaultIconWidth() {
+		return DIALOG_DEFAULT_ICON_SIZE;
 	}
 	
 	/**
-	 * Defines the default height of the dialog icon. It is recommended to set it unequal '-1px', 
+	 * Defines the default size of the dialog icon. It is recommended to set it unequal '-1px', 
 	 * because otherwise there is re-rendering of dialog recognizable when the dialog is displayed.
-	 * The cause is, that the icon is lazy loaded.
+	 * The cause is, that the icon is lazy loaded. 
 	 * 
-	 * @param height The new height
+	 * @param size The new size
 	 */
-	public static void setDialogDefaultIconHeight(String height) {
-		if (height != null) {
-			DIALOG_DEFAULT_ICON_HEIGHT = height;
+	public static void setDialogDefaultIconWidth(String size) {
+		if (size != null) {
+			DIALOG_DEFAULT_ICON_SIZE = size;
 		}
 	}
 	
@@ -358,8 +348,8 @@ public class MessageBox implements Serializable {
 	 * 
 	 * @return The {@link MessageBox} instance itself
 	 */
-	public MessageBox withIcon(Embedded icon) {
-		return withIcon(icon, DIALOG_DEFAULT_ICON_WIDTH, DIALOG_DEFAULT_ICON_HEIGHT);
+	public MessageBox withIcon(Component icon) {
+		return withIcon(icon, DIALOG_DEFAULT_ICON_SIZE, DIALOG_DEFAULT_ICON_SIZE);
 	}
 	
 	/**
@@ -371,7 +361,7 @@ public class MessageBox implements Serializable {
 	 * 
 	 * @return The {@link MessageBox} instance itself
 	 */
-	public MessageBox withIcon(Embedded icon, String width, String height) {
+	public MessageBox withIcon(Component icon, String width, String height) {
 		if (this.icon != null) {
 			contentLayout.removeComponent(this.icon);
 		}
@@ -610,6 +600,10 @@ public class MessageBox implements Serializable {
 	public MessageBox withButton(ButtonType buttonType, Runnable runOnClick, ButtonOption... options) {
 		Button button = new Button(BUTTON_DEFAULT_CAPTION_FACTORY.translate(buttonType, DIALOG_DEFAULT_LOCALE));
 		button.setData(runOnClick);
+		if (buttonType != null) {
+			button.addStyleName(buttonType.name().toLowerCase() + "Icon");
+		}
+		button.addStyleName("messageBoxIcon");
 		if (BUTTON_DEFAULT_ICONS_VISIBLE) {
 			button.setIcon(BUTTON_DEFAULT_ICON_FACTORY.getIcon(buttonType));
 		}
@@ -741,8 +735,7 @@ public class MessageBox implements Serializable {
 			}
 		}
 		if (addAutoCloseOption) {
-			finalOptions = Arrays.copyOf(options, options.length + 1);
-			finalOptions[options.length] = ButtonOption.closeOnClick(false);
+			finalOptions = addOption(options, ButtonOption.closeOnClick(false));
 		}
 		return withButton(ButtonType.HELP, runOnClick, finalOptions);
 	}
@@ -975,6 +968,12 @@ public class MessageBox implements Serializable {
 	        }
 	    }
 	    return builder.toString();
+	}
+	
+	protected ButtonOption[] addOption(ButtonOption[] options, ButtonOption addOption) {
+		ButtonOption[] finalOptions = Arrays.copyOf(options, options.length + 1);
+		finalOptions[options.length] = addOption;
+		return finalOptions;
 	}
 		
 	// methods for showing and closing the dialog =============================
