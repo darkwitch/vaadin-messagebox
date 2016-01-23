@@ -28,6 +28,7 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -596,13 +597,30 @@ public class DemoUI extends UI {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// If you want to implement in the listener yourselfredicon
-				// when the dialog is closed, call setAutoClose(false).
+				// You can enable and disable the icons very easily.
 				MessageBox.createQuestion()
 						.withCaption("Default icons")
 						.withMessage("Should the button icons be enabled?")
 						.withYesButton(() -> { MessageBox.setButtonDefaultIconsVisible(true); })
 						.withNoButton(() -> { MessageBox.setButtonDefaultIconsVisible(false); })
+						.open();
+			}
+		});
+        addExample("Text input", "You can simply add a input field.", new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// You need a text input? No problem ...
+				
+				TextField input = new TextField("How do you feel?");
+				
+				MessageBox.createQuestion()
+						.withCaption("Text input")
+						.withMessage(input)
+						.withOkButton(() -> { Notification.show("You feel " + input.getValue(), "", Notification.Type.WARNING_MESSAGE); })
+						.withCancelButton()
 						.open();
 			}
 		});
