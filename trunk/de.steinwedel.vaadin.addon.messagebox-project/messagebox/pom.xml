@@ -1,18 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project 
-	xmlns="http://maven.apache.org/POM/4.0.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.steinwedel.vaadin.addon</groupId>
 	<artifactId>messagebox</artifactId>
-	<version>3.0.5</version>
+	<version>3.0.15</version>
+
+	<name>MessageBox</name>
+	<description>The maven main core project description</description>
+	<url>https://sourceforge.net/projects/messagebox/</url>
+
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://sourceforge.net/p/messagebox/code/HEAD/tree/</url>
+	</scm>
+
 	<repositories>
 		<repository>
 			<id>vaadin-addons</id>
 			<url>http://maven.vaadin.com/vaadin-addons</url>
 		</repository>
 	</repositories>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -60,14 +76,65 @@
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
 						<manifestEntries>
-							<!-- Package format version - do not change -->
 							<Vaadin-Package-Version>1</Vaadin-Package-Version>
-							<!-- Vaadin-Widgetsets>de.steinwedel.messagebox.WidgetSet</Vaadin-Widgetsets-->
 							<Implementation-Title>MessageBox</Implementation-Title>
 						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<configuration>
+							<tasks>
+								<!-- Create javadoc war -->
+								<copy
+									file="target/${project.artifactId}-${project.version}-javadoc.jar"
+									tofile="target/${project.artifactId}-${project.version}-javadoc.war" />
+
+								<!-- Create zip -->
+								<unzip src="target/${project.artifactId}-${project.version}.jar"
+									dest="target">
+									<patternset>
+										<exclude name="META-INF/INDEX.LIST" />
+										<include name="META-INF/**" />
+									</patternset>
+								</unzip>
+								<jar destfile="target/${project.artifactId}-${project.version}.zip"
+									basedir="target/">
+									<manifest>
+      									<attribute name="Implementation-Title" value="MessageBox"/>
+      									<attribute name="Implementation-Version" value="${project.version}"/>
+      									<attribute name="Vaadin-Addon" value="${project.artifactId}-${project.version}.jar"/>
+      									<attribute name="Vaadin-Package-Version" value="1"/>
+    								</manifest>
+									<patternset>
+										<include name="META-INF/**" />
+										<include
+											name="${project.artifactId}-${project.version}-javadoc.jar" />
+										<include
+											name="${project.artifactId}-${project.version}-sources.jar" />
+										<include name="${project.artifactId}-${project.version}.jar" />
+									</patternset>
+								</jar>
+								<delete dir="target/META-INF" />
+								<!-- Place any ant task here. You can add anything you can add between 
+									<target> and </target> in a build.xml. -->
+
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+
 		</plugins>
 	</build>
 	<dependencies>
