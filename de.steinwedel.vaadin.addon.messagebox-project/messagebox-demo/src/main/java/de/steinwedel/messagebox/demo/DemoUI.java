@@ -515,19 +515,19 @@ public class DemoUI extends UI {
 				// I18N is even supported. It uses the default mechanism from Java.
 				// Currently, more than 40 languages are supported!
 				//
-				// With MessageBox.setDialogSessionLanguage(Locale.XYZ) you can
-				// can apply a language only for the current session.
+				// With MessageBox.setDialogDefaultLanguage(Locale.XYZ) you can
+				// can apply default language. Default is english.
 				
 				MessageBox.createQuestion()
 					.withCaption("Switch I18N")
 					.withHtmlMessage("Switch the internationalization. The demo shows German and English language supported.<br>Call <i><code>MessageBox.RESOURCES_FACTORY.setResourceBundle(<basename>);</code></i> for using your own resource bundle.")
 					.withCustomButton(() -> { 
-						MessageBox.setDialogDefaultLanguage(Locale.GERMAN); 
+						MessageBox.setDialogSessionLanguage(Locale.GERMAN); 
 						Notification.show("Button captions are now german.", "", Notification.Type.WARNING_MESSAGE); 
 						}, ButtonOption.icon(new ClassResource(DemoUI.class, "german.png")), ButtonOption.caption("German"))
 					.withCustomButton(() -> { 
-						MessageBox.setDialogDefaultLanguage(Locale.ENGLISH); 
-						Notification.show("Button captions are now engish.", "", Notification.Type.WARNING_MESSAGE); 
+						MessageBox.setDialogSessionLanguage(Locale.ENGLISH); 
+						Notification.show("Button captions are now english.", "", Notification.Type.WARNING_MESSAGE); 
 						}, ButtonOption.icon(new ClassResource(DemoUI.class, "english.png")), ButtonOption.caption("English"))
 					.open();
 			}
