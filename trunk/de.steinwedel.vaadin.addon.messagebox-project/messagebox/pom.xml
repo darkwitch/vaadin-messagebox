@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.steinwedel.vaadin.addon</groupId>
 	<artifactId>messagebox</artifactId>
-	<version>3.0.15</version>
+	<version>3.0.16</version>
 
 	<name>MessageBox</name>
 	<description>The maven main core project description</description>
@@ -141,7 +141,7 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>
-			<version>7.5.5</version>
+			<version>7.6.4</version>
 		</dependency>
 	</dependencies>
 </project>
