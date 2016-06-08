@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.steinwedel.vaadin.addon</groupId>
 	<artifactId>messagebox</artifactId>
-	<version>3.0.16</version>
+	<version>3.0.17</version>
 
 	<name>MessageBox</name>
 	<description>The maven main core project description</description>
@@ -107,11 +107,12 @@
 								<jar destfile="target/${project.artifactId}-${project.version}.zip"
 									basedir="target/">
 									<manifest>
-      									<attribute name="Implementation-Title" value="MessageBox"/>
-      									<attribute name="Implementation-Version" value="${project.version}"/>
-      									<attribute name="Vaadin-Addon" value="${project.artifactId}-${project.version}.jar"/>
-      									<attribute name="Vaadin-Package-Version" value="1"/>
-    								</manifest>
+										<attribute name="Implementation-Title" value="MessageBox" />
+										<attribute name="Implementation-Version" value="${project.version}" />
+										<attribute name="Vaadin-Addon"
+											value="${project.artifactId}-${project.version}.jar" />
+										<attribute name="Vaadin-Package-Version" value="1" />
+									</manifest>
 									<patternset>
 										<include name="META-INF/**" />
 										<include
@@ -142,6 +143,12 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>
 			<version>7.6.4</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
