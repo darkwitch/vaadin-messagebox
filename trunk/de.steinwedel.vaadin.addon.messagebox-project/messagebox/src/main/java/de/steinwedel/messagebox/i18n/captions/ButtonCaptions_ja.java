@@ -19,7 +19,7 @@ public class ButtonCaptions_ja extends ListResourceBundle {
 		return new Object[][] {
 			{ButtonType.OK.name(), "OK"},
 			{ButtonType.ABORT.name(), "中止"},
-			{ButtonType.CANCEL.name(), "ャンセル"},
+			{ButtonType.CANCEL.name(), "キャンセル"},
 			{ButtonType.YES.name(), "はい"},
 			{ButtonType.NO.name(), "いいえ"},
 			{ButtonType.CLOSE.name(), "閉じる"},
