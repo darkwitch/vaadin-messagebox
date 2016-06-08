@@ -75,6 +75,7 @@
     								</versionRange>
     								<goals>
     									<goal>update-theme</goal>
+    									<goal>update-widgetset</goal>
     								</goals>
     							</pluginExecutionFilter>
     							<action>
@@ -114,19 +115,19 @@
   	<dependency>
   		<groupId>com.vaadin</groupId>	
   		<artifactId>vaadin-client-compiled</artifactId>
-  		<version>7.5.5</version>
+  		<version>7.6.6</version>
   		<scope>provided</scope>
   	</dependency>
   	<dependency>
   		<groupId>com.vaadin</groupId>	
   		<artifactId>vaadin-client</artifactId>
-  		<version>7.5.5</version>
+  		<version>7.6.6</version>
   		<scope>provided</scope>
   	</dependency>
   	<dependency>
   		<groupId>com.vaadin</groupId>	
   		<artifactId>vaadin-client-compiler</artifactId>
-  		<version>7.5.5</version>
+  		<version>7.6.6</version>
   		<scope>provided</scope>
   	</dependency>
 	<dependency>
