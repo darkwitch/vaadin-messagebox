@@ -99,6 +99,24 @@ public abstract class ButtonOption {
 		};
 	}
 	
+	/**
+	 * Disables the button.
+	 * 
+	 * @return The ButtonOption
+	 */
+	public static ButtonOption disable() {
+		return new ButtonOption() {
+			
+			/**
+			 * See {@link ButtonOption#apply(MessageBox, Button)}
+			 */
+			@Override
+			public void apply(MessageBox messageBox, Button button) {
+				button.setEnabled(false);
+			}
+			
+		};
+	}
 	
 	public static class CloseOnClick extends ButtonOption {
 		

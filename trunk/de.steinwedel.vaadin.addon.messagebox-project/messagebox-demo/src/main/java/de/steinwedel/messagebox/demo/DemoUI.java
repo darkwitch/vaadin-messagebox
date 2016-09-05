@@ -15,6 +15,8 @@ import org.vaadin.jouni.dom.client.Css;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -33,6 +35,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.BaseTheme;
 
 import de.steinwedel.messagebox.ButtonOption;
+import de.steinwedel.messagebox.ButtonType;
 import de.steinwedel.messagebox.MessageBox;
 import de.steinwedel.messagebox.TransitionListener;
 import de.steinwedel.messagebox.icons.ClassicButtonIconFactory;
@@ -622,6 +625,32 @@ public class DemoUI extends UI {
 						.withOkButton(() -> { Notification.show("You feel " + input.getValue(), "", Notification.Type.WARNING_MESSAGE); })
 						.withCancelButton()
 						.open();
+			}
+		});
+        addExample("Disable button", "You can disable buttons and access them directly.", new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// You can valid the input, before you enable a button ...
+				
+				TextField input = new TextField("Any input enables the button:");
+				input.setImmediate(true);
+				
+				MessageBox mb = MessageBox.createQuestion()
+											.withCaption("Text input")
+											.withMessage(input)
+											.withOkButton(ButtonOption.disable());
+				
+				input.addTextChangeListener(new TextChangeListener() {				
+					@Override
+					public void textChange(TextChangeEvent event) {
+						mb.getButton(ButtonType.OK).setEnabled(!event.getText().isEmpty());
+					}
+				} );
+				
+				mb.open();
 			}
 		});
         addExample("Transistion effects", "You can add transition effects to the MessageBox.", new ClickListener() {
