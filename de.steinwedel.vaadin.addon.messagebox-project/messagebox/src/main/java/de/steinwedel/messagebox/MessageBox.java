@@ -2,6 +2,7 @@ package de.steinwedel.messagebox;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
 
 import com.vaadin.server.Sizeable.Unit;
@@ -176,6 +177,11 @@ public class MessageBox implements Serializable {
 	 */
 	protected boolean immutable;
 	
+	/**
+	 * Stores the button instance to a button type 
+	 */
+	protected HashMap<ButtonType, Button> buttons;
+	
 	// static methods =========================================================
 	
 	/**
@@ -278,7 +284,7 @@ public class MessageBox implements Serializable {
 	/**
 	 * You can configure, if the button icons are visible or not
 	 * 
-	 * @param visible Sets the visiblity of the button icons
+	 * @param visible Sets the visibility of the button icons
 	 */
 	public static void setButtonDefaultIconsVisible(boolean visible) {
 		BUTTON_DEFAULT_ICONS_VISIBLE = visible;
@@ -325,6 +331,7 @@ public class MessageBox implements Serializable {
 		// Initialize internal states
 		buttonAdded = false;
 		immutable = false;
+		buttons = new HashMap<ButtonType, Button>();
 	}
 	
 	// methods for customizing the dialog =====================================
@@ -599,6 +606,7 @@ public class MessageBox implements Serializable {
 	 */
 	public MessageBox withButton(ButtonType buttonType, Runnable runOnClick, ButtonOption... options) {
 		Button button = new Button(BUTTON_DEFAULT_CAPTION_FACTORY.translate(buttonType, DIALOG_DEFAULT_LOCALE));
+		buttons.put(buttonType, button);
 		button.setData(runOnClick);
 		if (buttonType != null) {
 			button.addStyleName(buttonType.name().toLowerCase() + "Icon");
@@ -927,10 +935,21 @@ public class MessageBox implements Serializable {
 	
 	/**
 	 * Returns the <code>Window</code> of the dialog.
+	 * 
 	 * @return The <code>Window</code> of the dialog.
 	 */
 	public Window getWindow() {
 		return window;
+	}
+	
+	/**
+	 * Returns the corresponding button to the buttonType.
+	 * 
+	 * @param buttonType The buttonType
+	 * @return Returns the corresponding button to the buttonType. If no binding is defined, it returns null.
+	 */
+	public Button getButton(ButtonType buttonType) {
+		return buttons.get(buttonType);
 	}
 	
 	/**
