@@ -643,12 +643,14 @@ public class DemoUI extends UI {
 											.withMessage(input)
 											.withOkButton(ButtonOption.disable());
 				
-				input.addTextChangeListener(new TextChangeListener() {				
-					@Override
-					public void textChange(TextChangeEvent event) {
-						mb.getButton(ButtonType.OK).setEnabled(!event.getText().isEmpty());
-					}
-				} );
+				input.addTextChangeListener(
+					new TextChangeListener() {				
+						@Override
+						public void textChange(TextChangeEvent event) {
+							mb.getButton(ButtonType.OK).setEnabled(!event.getText().isEmpty());
+						}
+					} 
+				);
 				
 				mb.open();
 			}
