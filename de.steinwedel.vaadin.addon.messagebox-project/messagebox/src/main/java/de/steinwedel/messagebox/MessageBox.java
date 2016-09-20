@@ -125,6 +125,11 @@ public class MessageBox implements Serializable {
 	 */
 	protected static boolean BUTTON_DEFAULT_ICONS_VISIBLE = true;
 	
+	/**
+	 * If no button is added and this property is set to true (default), an close button is added.
+	 */
+	protected static boolean BUTTON_ADD_CLOSE_PER_DEFAULT = true;
+	
 	// dialog specific configurations =========================================
 	
 	/**
@@ -288,6 +293,18 @@ public class MessageBox implements Serializable {
 	 */
 	public static void setButtonDefaultIconsVisible(boolean visible) {
 		BUTTON_DEFAULT_ICONS_VISIBLE = visible;
+	}
+	
+	/**
+	 * You can configure, if an close button is added per default, if
+	 * no further button is added to the dialog. Per default this property
+	 * is set to true. The default setting prevents, that you create a 
+	 * none closable dialog.
+	 * 
+	 * @param addClose Sets the behavior, if an close button should be added or not
+	 */
+	public static void setButtonAddClosePerDefault(boolean addClose) {
+		BUTTON_ADD_CLOSE_PER_DEFAULT = addClose;
 	}
 	
 	// constructors ===========================================================
@@ -1047,7 +1064,7 @@ public class MessageBox implements Serializable {
 	 */
 	public void open() {	
 		// Ensure, that the dialog has at least one button
-		if (!buttonAdded) {
+		if (!buttonAdded && BUTTON_ADD_CLOSE_PER_DEFAULT) {
 			withCloseButton();
 		}
 		
