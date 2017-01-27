@@ -7,16 +7,16 @@ import java.util.Locale;
 
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.VaadinService;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import de.steinwedel.messagebox.i18n.ButtonCaptionFactory;
@@ -322,7 +322,6 @@ public class MessageBox implements Serializable {
 		
 		// Create the top-level layout of the window
 		mainLayout = new VerticalLayout();
-		mainLayout.setImmediate(false);
 		mainLayout.setSizeUndefined();
 		mainLayout.setMargin(true);
 		mainLayout.setSpacing(true);
@@ -338,7 +337,6 @@ public class MessageBox implements Serializable {
 		
 		// Layout for the buttons 
 		buttonLayout = new HorizontalLayout();
-		buttonLayout.setImmediate(false);
 		buttonLayout.setSizeUndefined();
 		buttonLayout.setMargin(false);
 		buttonLayout.setSpacing(true);
@@ -582,8 +580,7 @@ public class MessageBox implements Serializable {
 			buttonLayout.addComponent(button);
 			
 			buttonAdded = true;
-			button.setImmediate(true);
-			
+
 			if (button.getData() != null && button.getData() instanceof Runnable) {
 				button.addClickListener(new ClickListener() {
 					
@@ -882,7 +879,7 @@ public class MessageBox implements Serializable {
 	
 	/**
 	 * Adds a button for customizing. E.g. you can set the custom caption and custom
-	 * icon with a {@link ButtonOption}. 
+	 * icon with a {@link ButtonOption}.
 	 * 
 	 * @param options Some optional {@link ButtonOption}s
 	 * 
@@ -894,7 +891,7 @@ public class MessageBox implements Serializable {
 	
 	/**
 	 * Adds a button for customizing. E.g. you can set the custom caption and custom
-	 * icon with a {@link ButtonOption}. 
+	 * icon with a {@link ButtonOption}.
 	 * 
 	 * @param runOnClick The Runnable, that is executed on clicking the button
 	 * @param options Some optional {@link ButtonOption}s
@@ -1017,7 +1014,7 @@ public class MessageBox implements Serializable {
 	/**
 	 * Creates the MessageBox instance without an icon.
 	 * 
-	 * @return The {@link MessageBox} instance  
+	 * @return The {@link MessageBox} instance
 	 */
 	public static MessageBox create() {
 		return new MessageBox();
@@ -1026,7 +1023,7 @@ public class MessageBox implements Serializable {
 	/**
 	 * Creates the MessageBox instance with an info icon.
 	 * 
-	 * @return The {@link MessageBox} instance  
+	 * @return The {@link MessageBox} instance
 	 */
 	public static MessageBox createInfo() {
 		return create().withIcon(DIALOG_DEFAULT_ICON_FACTORY.getInfoIcon());
@@ -1035,7 +1032,7 @@ public class MessageBox implements Serializable {
 	/**
 	 * Creates the MessageBox instance with a question icon.
 	 * 
-	 * @return The {@link MessageBox} instance  
+	 * @return The {@link MessageBox} instance
 	 */
 	public static MessageBox createQuestion() {
 		return create().withIcon(DIALOG_DEFAULT_ICON_FACTORY.getQuestionIcon());
@@ -1044,7 +1041,7 @@ public class MessageBox implements Serializable {
 	/**
 	 * Creates the MessageBox instance with a warning icon.
 	 * 
-	 * @return The {@link MessageBox} instance  
+	 * @return The {@link MessageBox} instance
 	 */
 	public static MessageBox createWarning() {
 		return create().withIcon(DIALOG_DEFAULT_ICON_FACTORY.getWarningIcon());
@@ -1053,7 +1050,7 @@ public class MessageBox implements Serializable {
 	/**
 	 * Creates the MessageBox instance with an error icon.
 	 * 
-	 * @return The {@link MessageBox} instance  
+	 * @return The {@link MessageBox} instance
 	 */
 	public static MessageBox createError() {
 		return create().withIcon(DIALOG_DEFAULT_ICON_FACTORY.getErrorIcon());
